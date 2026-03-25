@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-display: "Playfair Display", serif;
+  --font-body: "Manrope", sans-serif;
+
+  --color-cream-50: #fff9f2;
+  --color-cream-100: #f6ecdf;
+  --color-rose-gold-100: #f2d6ca;
+  --color-rose-gold-300: #d9a995;
+  --color-rose-gold-500: #b87861;
+  --color-rose-gold-600: #a55f47;
+  --color-charcoal-50: #e8e4e3;
+  --color-charcoal-400: #7a6d69;
+  --color-charcoal-600: #514844;
+  --color-charcoal-700: #3f3734;
+  --color-charcoal-800: #302a28;
+  --color-charcoal-900: #1f1b1a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-cream-50: var(--color-cream-50);
+  --color-cream-100: var(--color-cream-100);
+  --color-rose-gold-100: var(--color-rose-gold-100);
+  --color-rose-gold-300: var(--color-rose-gold-300);
+  --color-rose-gold-500: var(--color-rose-gold-500);
+  --color-rose-gold-600: var(--color-rose-gold-600);
+  --color-charcoal-50: var(--color-charcoal-50);
+  --color-charcoal-400: var(--color-charcoal-400);
+  --color-charcoal-600: var(--color-charcoal-600);
+  --color-charcoal-700: var(--color-charcoal-700);
+  --color-charcoal-800: var(--color-charcoal-800);
+  --color-charcoal-900: var(--color-charcoal-900);
+
+  --background-image-luxury-gradient: radial-gradient(circle at 20% 10%, #f2d6ca 0%, transparent 35%),
+    radial-gradient(circle at 80% 90%, #d8cdc1 0%, transparent 45%),
+    linear-gradient(130deg, #fff9f2 0%, #f4ece2 100%);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream-50);
+  color: var(--color-charcoal-900);
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
 }

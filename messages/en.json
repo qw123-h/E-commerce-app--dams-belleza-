@@ -1,0 +1,272 @@
+{
+  "common": {
+    "storeName": "Dam's belleza",
+    "language": "Language",
+    "english": "English",
+    "french": "French",
+    "currency": "XAF",
+    "nav": {
+      "products": "Products",
+      "checkout": "Checkout",
+      "adminOrders": "Admin Orders",
+      "adminPayments": "Admin Payments",
+      "adminDelivery": "Admin Delivery",
+      "adminRoles": "Admin Roles",
+      "adminReports": "Admin Reports",
+      "adminNotifications": "Notifications",
+      "trackOrder": "Track Order"
+    }
+  },
+  "adminRoles": {
+    "title": "Role & Permission Manager",
+    "subtitle": "Super Admin controls dynamic role creation, permission mapping, and user assignments.",
+    "createRole": "Create custom role",
+    "roleName": "Role name",
+    "roleSlug": "Role slug",
+    "roleDescription": "Description",
+    "create": "Create role",
+    "save": "Save",
+    "saving": "Saving...",
+    "permissions": "Permissions",
+    "assignUserRole": "Assign role to user",
+    "user": "User",
+    "role": "Role",
+    "assign": "Assign",
+    "templates": "Role templates",
+    "templateOwner": "Store owner template",
+    "templateHelper": "Helper template",
+    "systemRoleLocked": "System role permissions are locked."
+  },
+  "adminDelivery": {
+    "title": "Delivery Operations",
+    "subtitle": "Manage delivery zones, riders, assignment, and last-mile status transitions.",
+    "zones": "Delivery Zones",
+    "riders": "Riders",
+    "assignments": "Assignments",
+    "addZone": "Add zone",
+    "addRider": "Add rider",
+    "assign": "Assign",
+    "save": "Save",
+    "saving": "Saving...",
+    "city": "City",
+    "zoneName": "Zone",
+    "price": "Price",
+    "riderName": "Rider name",
+    "riderPhone": "Rider phone",
+    "order": "Order",
+    "rider": "Rider",
+    "deliveryStatus": "Delivery status"
+  },
+  "trackOrder": {
+    "title": "Track Your Order",
+    "subtitle": "Enter your order number and phone used at checkout to follow delivery progress.",
+    "orderPlaceholder": "Order number (e.g. DB-20260325-1234)",
+    "phonePlaceholder": "Phone number used at checkout",
+    "check": "Track",
+    "orderNumber": "Order",
+    "orderStatus": "Order status",
+    "deliveryStatus": "Delivery status",
+    "deliveryMethod": "Delivery method",
+    "notAssigned": "Not assigned yet",
+    "rider": "Rider",
+    "riderPhone": "Rider phone",
+    "chatRider": "Chat rider on WhatsApp",
+    "notFound": "Order not found or phone verification failed."
+  },
+  "adminNotifications": {
+    "title": "In-app Notifications",
+    "subtitle": "Follow live operational updates for orders, payments, and delivery actions.",
+    "markRead": "Mark as read",
+    "markAllRead": "Mark all read",
+    "marking": "Updating...",
+    "empty": "No notifications available.",
+    "unread": "Unread",
+    "all": "All"
+  },
+  "adminReports": {
+    "title": "Business Dashboard",
+    "subtitle": "Track sales, profit, stock alerts, and product performance over time.",
+    "lowStock": "Low stock alerts",
+    "mix": {
+      "wigs": "Wigs",
+      "perfumes": "Perfumes"
+    },
+    "filters": {
+      "range": "Range",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "custom": "Custom",
+      "from": "From",
+      "to": "To",
+      "apply": "Apply",
+      "snapshot": "Save snapshot",
+      "snapshotting": "Saving...",
+      "exportPdf": "Export PDF",
+      "exportExcel": "Export Excel"
+    }
+  },
+  "adminPayments": {
+    "title": "Payment Review",
+    "subtitle": "Verify customer transfer evidence and approve or reject transactions.",
+    "metrics": {
+      "total": "Total payments",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "confirmedAmount": "Confirmed amount"
+    },
+    "table": {
+      "payment": "Reference",
+      "order": "Order",
+      "method": "Method",
+      "amount": "Amount",
+      "status": "Status",
+      "action": "Review",
+      "receipt": "Download receipt"
+    },
+    "method": {
+      "ORANGE_MONEY": "Orange Money",
+      "MTN_MOMO": "MTN MoMo",
+      "BANK_TRANSFER": "Bank transfer"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "REJECTED": "Rejected",
+      "REFUNDED": "Refunded"
+    },
+    "action": {
+      "save": "Save",
+      "saving": "Saving...",
+      "rejectReason": "Reason for rejection",
+      "error": "Could not update payment."
+    }
+  },
+  "adminOrders": {
+    "title": "Order Operations",
+    "subtitle": "Track, confirm, and close customer orders in one place.",
+    "metrics": {
+      "totalOrders": "Total orders",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "deliveredRevenue": "Delivered revenue"
+    },
+    "table": {
+      "order": "Order",
+      "customer": "Guest",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "action": "Update",
+      "whatsapp": "Chat on WhatsApp"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "DISPATCHED": "Dispatched",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled"
+    },
+    "action": {
+      "update": "Save",
+      "updating": "Saving...",
+      "error": "Update failed. Try again."
+    }
+  },
+  "home": {
+    "headline": "Luxury wigs and perfumes, curated in Yaounde",
+    "subheadline": "Discover premium beauty essentials from Mokolo market with elegant shopping and trusted delivery.",
+    "ctaProducts": "Explore products",
+    "ctaWhatsApp": "Chat on WhatsApp",
+    "badge": "Single-vendor fashion beauty boutique"
+  },
+  "catalog": {
+    "title": "Storefront Catalog",
+    "subtitle": "Browse wigs and perfumes available for order in Yaounde with clear pricing and stock visibility.",
+    "result": "product",
+    "results": "products",
+    "empty": "No products match your current filters.",
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Name, SKU, category...",
+      "productType": "Type",
+      "priceMode": "Pricing",
+      "sortBy": "Sort",
+      "all": "All",
+      "wigs": "Wigs",
+      "perfumes": "Perfumes",
+      "fixed": "Fixed",
+      "negotiable": "Negotiable",
+      "newest": "Newest",
+      "priceLowToHigh": "Price: low to high",
+      "priceHighToLow": "Price: high to low",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "labels": {
+      "negotiable": "Price on request",
+      "outOfStock": "Out of stock",
+      "inStock": "In stock",
+      "category": "Category",
+      "viewDetails": "View details",
+      "backToCatalog": "Back to catalog",
+      "receipt": "Download receipt",
+      "whatsapp": "Chat on WhatsApp",
+      "requestOnWhatsApp": "Request on WhatsApp",
+      "buyNow": "Buy now"
+    }
+  },
+  "checkout": {
+    "title": "Secure Checkout",
+    "subtitle": "Complete your order for {product}.",
+    "backToCatalog": "Back to products",
+    "missingProductTitle": "Choose a product first",
+    "missingProductMessage": "Start from the catalog to continue with checkout.",
+    "form": {
+      "yourName": "Your name",
+      "phone": "Phone number",
+      "email": "Email (optional)",
+      "quantity": "Quantity",
+      "deliveryMethod": "Delivery method",
+      "paymentMethod": "Payment method",
+      "paymentReference": "Payment reference (optional)",
+      "pickup": "Pickup at store",
+      "delivery": "Home delivery",
+      "orangeMoney": "Orange Money",
+      "mtnMomo": "MTN MoMo",
+      "bankTransfer": "Bank transfer",
+      "deliveryZone": "Delivery zone",
+      "notes": "Notes",
+      "subtotal": "Subtotal",
+      "deliveryFee": "Delivery fee",
+      "total": "Total",
+      "submit": "Place order",
+      "submitting": "Placing order...",
+      "errorFallback": "Please review your details and try again."
+    },
+    "success": {
+      "title": "Order confirmed",
+      "message": "Your order has been received. We will contact you shortly.",
+      "orderNumber": "Order",
+      "invoice": "Download invoice",
+      "home": "Back home",
+      "products": "Continue shopping"
+    }
+  },
+  "auth": {
+    "signInTitle": "Sign in",
+    "signInSubtitle": "Use your staff account to access protected management modules.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "loading": "Signing in...",
+    "invalidCredentials": "Invalid credentials or inactive account."
+  },
+  "errors": {
+    "unauthorizedTitle": "Access denied",
+    "unauthorizedMessage": "You do not have permission to view this page.",
+    "notFoundTitle": "Page not found",
+    "notFoundMessage": "The page you are looking for does not exist or was moved.",
+    "goHome": "Back to home"
+  }
+}

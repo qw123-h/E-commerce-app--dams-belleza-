@@ -1,0 +1,272 @@
+{
+  "common": {
+    "storeName": "Dam's belleza",
+    "language": "Langue",
+    "english": "Anglais",
+    "french": "Francais",
+    "currency": "XAF",
+    "nav": {
+      "products": "Produits",
+      "checkout": "Paiement",
+      "adminOrders": "Commandes Admin",
+      "adminPayments": "Paiements Admin",
+      "adminDelivery": "Livraison Admin",
+      "adminRoles": "Roles Admin",
+      "adminReports": "Rapports Admin",
+      "adminNotifications": "Notifications",
+      "trackOrder": "Suivi Commande"
+    }
+  },
+  "adminRoles": {
+    "title": "Gestion Roles & Permissions",
+    "subtitle": "Le Super Admin controle creation des roles, permissions et affectations utilisateurs.",
+    "createRole": "Creer role personnalise",
+    "roleName": "Nom role",
+    "roleSlug": "Slug role",
+    "roleDescription": "Description",
+    "create": "Creer role",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "permissions": "Permissions",
+    "assignUserRole": "Affecter role utilisateur",
+    "user": "Utilisateur",
+    "role": "Role",
+    "assign": "Affecter",
+    "templates": "Modeles roles",
+    "templateOwner": "Modele proprietaire",
+    "templateHelper": "Modele assistant",
+    "systemRoleLocked": "Les roles systeme sont verrouilles."
+  },
+  "adminDelivery": {
+    "title": "Operations Livraison",
+    "subtitle": "Gerez zones, livreurs, affectations et statuts de livraison.",
+    "zones": "Zones Livraison",
+    "riders": "Livreurs",
+    "assignments": "Affectations",
+    "addZone": "Ajouter zone",
+    "addRider": "Ajouter livreur",
+    "assign": "Affecter",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "city": "Ville",
+    "zoneName": "Zone",
+    "price": "Prix",
+    "riderName": "Nom livreur",
+    "riderPhone": "Telephone livreur",
+    "order": "Commande",
+    "rider": "Livreur",
+    "deliveryStatus": "Statut livraison"
+  },
+  "trackOrder": {
+    "title": "Suivre Votre Commande",
+    "subtitle": "Entrez numero de commande et telephone utilise au paiement pour suivre la livraison.",
+    "orderPlaceholder": "Numero commande (ex: DB-20260325-1234)",
+    "phonePlaceholder": "Telephone utilise a la commande",
+    "check": "Suivre",
+    "orderNumber": "Commande",
+    "orderStatus": "Statut commande",
+    "deliveryStatus": "Statut livraison",
+    "deliveryMethod": "Mode livraison",
+    "notAssigned": "Pas encore affectee",
+    "rider": "Livreur",
+    "riderPhone": "Telephone livreur",
+    "chatRider": "Discuter avec livreur sur WhatsApp",
+    "notFound": "Commande introuvable ou verification telephone echouee."
+  },
+  "adminNotifications": {
+    "title": "Notifications Internes",
+    "subtitle": "Suivez les mises a jour en temps reel des commandes, paiements et livraisons.",
+    "markRead": "Marquer lu",
+    "markAllRead": "Tout marquer lu",
+    "marking": "Mise a jour...",
+    "empty": "Aucune notification disponible.",
+    "unread": "Non lues",
+    "all": "Toutes"
+  },
+  "adminReports": {
+    "title": "Tableau de Bord",
+    "subtitle": "Suivez ventes, profits, alertes stock et performance produits dans le temps.",
+    "lowStock": "Alertes stock bas",
+    "mix": {
+      "wigs": "Perruques",
+      "perfumes": "Parfums"
+    },
+    "filters": {
+      "range": "Periode",
+      "daily": "Jour",
+      "weekly": "Semaine",
+      "monthly": "Mois",
+      "custom": "Personnalise",
+      "from": "Du",
+      "to": "Au",
+      "apply": "Appliquer",
+      "snapshot": "Sauver snapshot",
+      "snapshotting": "Sauvegarde...",
+      "exportPdf": "Exporter PDF",
+      "exportExcel": "Exporter Excel"
+    }
+  },
+  "adminPayments": {
+    "title": "Verification Paiements",
+    "subtitle": "Verifiez les preuves de transfert et confirmez ou rejetez les paiements.",
+    "metrics": {
+      "total": "Total paiements",
+      "pending": "En attente",
+      "confirmed": "Confirmes",
+      "confirmedAmount": "Montant confirme"
+    },
+    "table": {
+      "payment": "Reference",
+      "order": "Commande",
+      "method": "Methode",
+      "amount": "Montant",
+      "status": "Statut",
+      "action": "Validation",
+      "receipt": "Telecharger recu"
+    },
+    "method": {
+      "ORANGE_MONEY": "Orange Money",
+      "MTN_MOMO": "MTN MoMo",
+      "BANK_TRANSFER": "Virement bancaire"
+    },
+    "status": {
+      "PENDING": "En attente",
+      "CONFIRMED": "Confirme",
+      "REJECTED": "Rejete",
+      "REFUNDED": "Rembourse"
+    },
+    "action": {
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "rejectReason": "Motif du rejet",
+      "error": "Mise a jour du paiement impossible."
+    }
+  },
+  "adminOrders": {
+    "title": "Operations Commandes",
+    "subtitle": "Suivez, confirmez et cloturez les commandes clients.",
+    "metrics": {
+      "totalOrders": "Total commandes",
+      "pending": "En attente",
+      "confirmed": "Confirmees",
+      "deliveredRevenue": "Revenus livres"
+    },
+    "table": {
+      "order": "Commande",
+      "customer": "Client",
+      "items": "Articles",
+      "total": "Total",
+      "status": "Statut",
+      "action": "Mise a jour",
+      "whatsapp": "Discuter sur WhatsApp"
+    },
+    "status": {
+      "PENDING": "En attente",
+      "CONFIRMED": "Confirmee",
+      "DISPATCHED": "Expediee",
+      "DELIVERED": "Livree",
+      "CANCELLED": "Annulee"
+    },
+    "action": {
+      "update": "Enregistrer",
+      "updating": "Enregistrement...",
+      "error": "Echec de mise a jour. Reessayez."
+    }
+  },
+  "home": {
+    "headline": "Perruques et parfums de luxe, selectionnes a Yaounde",
+    "subheadline": "Decouvrez des essentiels beaute premium du marche Mokolo avec une experience elegante et une livraison fiable.",
+    "ctaProducts": "Voir les produits",
+    "ctaWhatsApp": "Discuter sur WhatsApp",
+    "badge": "Boutique beaute mode mono-vendeur"
+  },
+  "catalog": {
+    "title": "Catalogue Boutique",
+    "subtitle": "Parcourez les perruques et parfums disponibles a Yaounde avec une vue claire des prix et du stock.",
+    "result": "produit",
+    "results": "produits",
+    "empty": "Aucun produit ne correspond aux filtres appliques.",
+    "filters": {
+      "search": "Recherche",
+      "searchPlaceholder": "Nom, SKU, categorie...",
+      "productType": "Type",
+      "priceMode": "Tarification",
+      "sortBy": "Tri",
+      "all": "Tous",
+      "wigs": "Perruques",
+      "perfumes": "Parfums",
+      "fixed": "Fixe",
+      "negotiable": "Negociable",
+      "newest": "Plus recents",
+      "priceLowToHigh": "Prix: croissant",
+      "priceHighToLow": "Prix: decroissant",
+      "apply": "Appliquer",
+      "reset": "Reinitialiser"
+    },
+    "labels": {
+      "negotiable": "Prix sur demande",
+      "outOfStock": "Rupture de stock",
+      "inStock": "En stock",
+      "category": "Categorie",
+      "viewDetails": "Voir details",
+      "backToCatalog": "Retour au catalogue",
+      "receipt": "Telecharger recu",
+      "whatsapp": "Discuter sur WhatsApp",
+      "requestOnWhatsApp": "Commander via WhatsApp",
+      "buyNow": "Acheter"
+    }
+  },
+  "checkout": {
+    "title": "Paiement Securise",
+    "subtitle": "Finalisez votre commande pour {product}.",
+    "backToCatalog": "Retour aux produits",
+    "missingProductTitle": "Choisissez d'abord un produit",
+    "missingProductMessage": "Commencez depuis le catalogue pour continuer le paiement.",
+    "form": {
+      "yourName": "Votre nom",
+      "phone": "Numero de telephone",
+      "email": "Email (optionnel)",
+      "quantity": "Quantite",
+      "deliveryMethod": "Mode de livraison",
+      "paymentMethod": "Mode de paiement",
+      "paymentReference": "Reference de paiement (optionnel)",
+      "pickup": "Retrait en boutique",
+      "delivery": "Livraison a domicile",
+      "orangeMoney": "Orange Money",
+      "mtnMomo": "MTN MoMo",
+      "bankTransfer": "Virement bancaire",
+      "deliveryZone": "Zone de livraison",
+      "notes": "Notes",
+      "subtotal": "Sous-total",
+      "deliveryFee": "Frais de livraison",
+      "total": "Total",
+      "submit": "Valider la commande",
+      "submitting": "Commande en cours...",
+      "errorFallback": "Verifiez vos informations puis reessayez."
+    },
+    "success": {
+      "title": "Commande confirmee",
+      "message": "Votre commande est enregistree. Nous vous contacterons rapidement.",
+      "orderNumber": "Commande",
+      "invoice": "Telecharger facture",
+      "home": "Accueil",
+      "products": "Continuer vos achats"
+    }
+  },
+  "auth": {
+    "signInTitle": "Connexion",
+    "signInSubtitle": "Utilisez votre compte equipe pour acceder aux modules de gestion proteges.",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "loading": "Connexion en cours...",
+    "invalidCredentials": "Identifiants invalides ou compte inactif."
+  },
+  "errors": {
+    "unauthorizedTitle": "Acces refuse",
+    "unauthorizedMessage": "Vous n'avez pas la permission d'acceder a cette page.",
+    "notFoundTitle": "Page introuvable",
+    "notFoundMessage": "La page demandee n'existe pas ou a ete deplacee.",
+    "goHome": "Retour a l'accueil"
+  }
+}
