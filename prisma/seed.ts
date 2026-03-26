@@ -37,7 +37,8 @@ function slugify(value: string) {
 }
 
 function imagePlaceholder(type: "perfume" | "wig", slug: string) {
-  return `https://res.cloudinary.com/demo/image/upload/dams-belleza/${type}/${slug}.jpg`;
+  const keyword = type === "perfume" ? "perfume,bottle,luxury" : "wig,hair,beauty";
+  return `https://loremflickr.com/1200/1200/${keyword}?lock=${encodeURIComponent(slug)}`;
 }
 
 function orderDateOffset(daysAgo: number) {

@@ -6,8 +6,10 @@
     "french": "French",
     "currency": "XAF",
     "nav": {
+      "menu": "Menu",
       "products": "Products",
       "checkout": "Checkout",
+      "connect": "Sign in / Create account",
       "adminOrders": "Admin Orders",
       "adminPayments": "Admin Payments",
       "adminDelivery": "Admin Delivery",
@@ -122,7 +124,8 @@
       "amount": "Amount",
       "status": "Status",
       "action": "Review",
-      "receipt": "Download receipt"
+      "receipt": "Download receipt",
+      "whatsapp": "Chat on WhatsApp"
     },
     "method": {
       "ORANGE_MONEY": "Orange Money",
@@ -177,8 +180,19 @@
     "headline": "Luxury wigs and perfumes, curated in Yaounde",
     "subheadline": "Discover premium beauty essentials from Mokolo market with elegant shopping and trusted delivery.",
     "ctaProducts": "Explore products",
+    "ctaConnect": "Sign in / Create account",
     "ctaWhatsApp": "Chat on WhatsApp",
-    "badge": "Single-vendor fashion beauty boutique"
+    "badge": "Single-vendor fashion beauty boutique",
+    "featuredTitle": "Featured Articles",
+    "seeAll": "See all",
+    "priceOnRequest": "Price on request",
+    "stockNow": "In stock now: {count}",
+    "stockOut": "Out of stock",
+    "promo": {
+      "hot": "Hot deals",
+      "fastShip": "Fast shipping",
+      "topSupplier": "Top supplier"
+    }
   },
   "catalog": {
     "title": "Storefront Catalog",
@@ -222,6 +236,7 @@
     "backToCatalog": "Back to products",
     "missingProductTitle": "Choose a product first",
     "missingProductMessage": "Start from the catalog to continue with checkout.",
+    "quickPickTitle": "Or pick one of these ready-to-buy products",
     "form": {
       "yourName": "Your name",
       "phone": "Phone number",

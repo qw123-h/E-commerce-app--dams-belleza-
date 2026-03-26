@@ -8,10 +8,13 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
+    "verify:prod": "npm run typecheck && npm run build",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:prepare:images": "tsx prisma/prepare-import-from-images.ts",
+    "prisma:import:real": "tsx prisma/import-real-products.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

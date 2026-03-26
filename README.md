@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dam's belleza
 
-## Getting Started
+Production-ready e-commerce platform for a single-vendor beauty store in Yaounde.
 
-First, run the development server:
+## Features
+
+- Bilingual storefront (`fr`, `en`) with locale routing.
+- Product catalog for wigs and perfumes with stock visibility.
+- Guest checkout with order creation and payment capture.
+- Admin operations modules:
+	- Orders management
+	- Payments review and status updates
+	- Delivery assignment and tracking
+	- Notifications center
+	- Reporting dashboard and exports
+	- Dynamic RBAC role management
+- Secure document routes for invoice and receipt PDFs.
+- PostgreSQL + Prisma with audit-oriented schema and advanced SQL migration.
+- Realistic seed pipeline for demo catalog and operational records.
+
+## Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Prisma + PostgreSQL
+- NextAuth
+- next-intl
+- Tailwind CSS
+
+## Quick Start
+
+1. Install dependencies.
+
+```bash
+npm install
+```
+
+2. Create environment file.
+
+```bash
+cp .env.example .env
+```
+
+3. Set a valid `DATABASE_URL` and `NEXTAUTH_SECRET` in `.env`.
+
+4. Apply migrations.
+
+```bash
+npm run prisma:migrate -- --name init_local
+```
+
+5. Seed demo data.
+
+```bash
+npm run prisma:seed
+```
+
+6. Start development server.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Useful Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Dev server: `npm run dev`
+- Type check: `npm run typecheck`
+- Build: `npm run build`
+- Production verification: `npm run verify:prod`
+- Prisma generate: `npm run prisma:generate`
+- Prisma migrate: `npm run prisma:migrate`
+- Prisma seed: `npm run prisma:seed`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Health Check
 
-## Learn More
+- Runtime health endpoint: `/api/health`
+- Returns:
+	- `200` when app and DB are reachable
+	- `503` when DB is unreachable
 
-To learn more about Next.js, take a look at the following resources:
+## Demo Accounts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The seed creates staff and customer accounts. Password value for seeded users is defined in `prisma/seed.ts` via `SEED_PASSWORD`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment Notes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Run `npm run verify:prod` before deployment.
+- Ensure all required environment variables are configured in the target host.
+- Run Prisma migrations in the target environment before first startup.
+- See `DEPLOYMENT_CHECKLIST.md` for full release runbook.

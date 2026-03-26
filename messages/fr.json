@@ -6,8 +6,10 @@
     "french": "Francais",
     "currency": "XAF",
     "nav": {
+      "menu": "Menu",
       "products": "Produits",
       "checkout": "Paiement",
+      "connect": "Connexion / Creer un compte",
       "adminOrders": "Commandes Admin",
       "adminPayments": "Paiements Admin",
       "adminDelivery": "Livraison Admin",
@@ -122,7 +124,8 @@
       "amount": "Montant",
       "status": "Statut",
       "action": "Validation",
-      "receipt": "Telecharger recu"
+      "receipt": "Telecharger recu",
+      "whatsapp": "Discuter sur WhatsApp"
     },
     "method": {
       "ORANGE_MONEY": "Orange Money",
@@ -177,8 +180,19 @@
     "headline": "Perruques et parfums de luxe, selectionnes a Yaounde",
     "subheadline": "Decouvrez des essentiels beaute premium du marche Mokolo avec une experience elegante et une livraison fiable.",
     "ctaProducts": "Voir les produits",
+    "ctaConnect": "Connexion / Creer un compte",
     "ctaWhatsApp": "Discuter sur WhatsApp",
-    "badge": "Boutique beaute mode mono-vendeur"
+    "badge": "Boutique beaute mode mono-vendeur",
+    "featuredTitle": "Articles en vedette",
+    "seeAll": "Voir tout",
+    "priceOnRequest": "Prix sur demande",
+    "stockNow": "Stock disponible: {count}",
+    "stockOut": "Rupture de stock",
+    "promo": {
+      "hot": "Promotions chaudes",
+      "fastShip": "Livraison rapide",
+      "topSupplier": "Top fournisseur"
+    }
   },
   "catalog": {
     "title": "Catalogue Boutique",
@@ -222,6 +236,7 @@
     "backToCatalog": "Retour aux produits",
     "missingProductTitle": "Choisissez d'abord un produit",
     "missingProductMessage": "Commencez depuis le catalogue pour continuer le paiement.",
+    "quickPickTitle": "Ou choisissez un produit pret a acheter",
     "form": {
       "yourName": "Votre nom",
       "phone": "Numero de telephone",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
 import {CheckoutForm} from "@/components/storefront/checkout-form";
+import {formatXaf} from "@/lib/format";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
 import {getActiveDeliveryZones} from "@/lib/storefront-order";
@@ -26,16 +27,60 @@ export default async function CheckoutPage({
   const t = await getTranslations({locale, namespace: "checkout"});
 
   if (!slug) {
+    const quickPickProducts = await prisma.product.findMany({
+      where: {
+        isPublished: true,
+        deletedAt: null,
+        salePrice: {
+          not: null,
+        },
+      },
+      select: {
+        slug: true,
+        name: true,
+        salePrice: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 6,
+    });
+
     return (
-      <section className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 text-center shadow-xl shadow-charcoal-900/5">
-        <h1 className="font-display text-3xl text-charcoal-900">{t("missingProductTitle")}</h1>
-        <p className="mt-2 text-charcoal-700">{t("missingProductMessage")}</p>
-        <Link
-          href={`/${locale}/products`}
-          className="mt-6 inline-flex rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
-        >
-          {t("backToCatalog")}
-        </Link>
+      <section className="space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 shadow-xl shadow-charcoal-900/5">
+        <div className="text-center">
+          <h1 className="font-display text-3xl text-charcoal-900">{t("missingProductTitle")}</h1>
+          <p className="mt-2 text-charcoal-700">{t("missingProductMessage")}</p>
+        </div>
+
+        {quickPickProducts.length ? (
+          <div>
+            <p className="mb-3 text-center text-sm font-semibold text-charcoal-800">{t("quickPickTitle")}</p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {quickPickProducts.map((product) => (
+                <Link
+                  key={product.slug}
+                  href={`/${locale}/checkout?product=${product.slug}`}
+                  className="rounded-2xl border border-charcoal-900/10 bg-white p-4 transition hover:border-charcoal-900/25"
+                >
+                  <p className="font-semibold text-charcoal-900">{product.name}</p>
+                  <p className="mt-1 text-sm text-charcoal-700">
+                    {formatXaf(Number(product.salePrice), locale)}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="text-center">
+          <Link
+            href={`/${locale}/products`}
+            className="inline-flex rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
+          >
+            {t("backToCatalog")}
+          </Link>
+        </div>
       </section>
     );
   }
