@@ -15,10 +15,17 @@ export async function POST(request: Request) {
     return NextResponse.json({message: "Invalid rider payload"}, {status: 400});
   }
 
-  const rider = await createRider({
-    fullName: body.fullName.trim(),
-    phone: body.phone.trim(),
-  });
+  try {
+    const rider = await createRider({
+      fullName: body.fullName.trim(),
+      phone: body.phone.trim(),
+    });
 
-  return NextResponse.json({rider}, {status: 201});
+    return NextResponse.json({rider}, {status: 201});
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      return NextResponse.json({message: "A rider already exists with this phone"}, {status: 409});
+    }
+    return NextResponse.json({message: "Could not create rider"}, {status: 400});
+  }
 }

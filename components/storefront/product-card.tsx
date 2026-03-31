@@ -30,7 +30,7 @@ export function ProductCard({locale, product, labels}: ProductCardProps) {
   const hasStock = (product.quantityOnHand ?? 0) > 0;
 
   return (
-    <article className="group overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 shadow-lg shadow-charcoal-900/5 transition hover:-translate-y-0.5 hover:shadow-xl">
+    <article className="group overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 shadow-lg shadow-charcoal-900/5 transition hover:-translate-y-0.5 hover:shadow-xl animate-fade-up-delay-2 alive-hover">
       <div className="relative h-56 overflow-hidden bg-gradient-to-br from-rose-gold-200/35 via-cream-200 to-charcoal-300/20">
         {product.imageUrl ? (
           // Using a native image tag keeps external image setup simple before Cloudinary optimization is configured.

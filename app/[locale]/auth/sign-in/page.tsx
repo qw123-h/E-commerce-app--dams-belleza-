@@ -23,6 +23,7 @@ export default async function SignInPage({
       <p className="mt-2 text-sm text-charcoal-700">{t("signInSubtitle")}</p>
 
       <SignInForm
+        locale={locale}
         callbackUrl={callbackUrl}
         labels={{
           email: t("email"),
@@ -30,6 +31,9 @@ export default async function SignInPage({
           submit: t("submit"),
           loading: t("loading"),
           invalidCredentials: t("invalidCredentials"),
+          forgotPassword: t("forgotPassword"),
+          noAccount: t("noAccount"),
+          createAccountLink: t("createAccountLink"),
         }}
       />
     </section>

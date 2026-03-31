@@ -60,8 +60,8 @@ export default async function ProductsPage({
   const products = await getStorefrontProducts(query);
 
   return (
-    <section className="space-y-6">
-      <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-7 shadow-lg shadow-charcoal-900/5">
+    <section className="space-y-6 animate-fade-up">
+      <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-7 shadow-lg shadow-charcoal-900/5 animate-fade-up-delay-1">
         <h1 className="font-display text-4xl text-charcoal-900">{t("title")}</h1>
         <p className="mt-2 max-w-3xl text-charcoal-700">{t("subtitle")}</p>
       </header>
@@ -88,14 +88,14 @@ export default async function ProductsPage({
         value={query}
       />
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between animate-fade-up-delay-1">
         <p className="text-sm text-charcoal-700">
           {products.length} {products.length === 1 ? t("result") : t("results")}
         </p>
       </div>
 
       {products.length ? (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 animate-fade-up-delay-2">
           {products.map((product) => (
             <ProductCard
               key={product.id}

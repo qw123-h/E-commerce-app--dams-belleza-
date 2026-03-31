@@ -10,6 +10,7 @@ import {sessionHasPermission} from "@/lib/rbac";
 import {IntlProvider} from "@/components/providers/intl-provider";
 import {LanguageSwitcher} from "@/components/storefront/language-switcher";
 import {WhatsAppFloat} from "@/components/storefront/whatsapp-float";
+import {LogoutButton} from "@/components/auth/logout-button";
 
 const display = Playfair_Display({
   subsets: ["latin"],
@@ -53,32 +54,44 @@ export default async function LocaleLayout({
   ]);
 
   const canReadOrders = sessionHasPermission(session, "orders.read");
+  const canReadProducts = sessionHasPermission(session, "products.read");
   const canReviewPayments = sessionHasPermission(session, "payments.review");
   const canManageDelivery = sessionHasPermission(session, "orders.write");
   const canReadReports = sessionHasPermission(session, "reports.read");
   const canManageRoles = sessionHasPermission(session, "roles.manage");
+  const isAdminUser = canReadOrders || canReadProducts || canReviewPayments || canManageDelivery || canReadReports || canManageRoles;
+
 
   return (
     <html lang={locale} className={`${display.variable} ${body.variable}`}>
       <body className="min-h-screen bg-luxury-gradient text-charcoal-900 antialiased">
-        <IntlProvider locale={locale} messages={messages}>
-          <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8">
-            <header className="sticky top-0 z-40 flex items-center justify-between border-b border-charcoal-900/10 bg-cream-50/90 py-4 backdrop-blur">
+        <IntlProvider locale={locale} messages={messages} timeZone="Africa/Douala">
+          <div className="flex min-h-screen w-full flex-col">
+            <header className="sticky top-0 z-40 flex items-center justify-between border-b border-charcoal-900/10 bg-cream-50/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 animate-fade-up">
               <div className="flex items-center gap-8">
                 <div>
                   <p className="font-display text-xl tracking-wide text-charcoal-900">Dam's belleza</p>
                   <p className="text-xs uppercase tracking-[0.2em] text-charcoal-600">Yaounde • Mokolo</p>
                 </div>
                 <nav className="hidden items-center gap-4 text-sm font-semibold text-charcoal-800 md:flex">
-                  <Link href={`/${locale}/products`} className="transition hover:text-charcoal-900">
-                    {nav("products")}
-                  </Link>
-                  <Link href={`/${locale}/checkout`} className="transition hover:text-charcoal-900">
-                    {nav("checkout")}
-                  </Link>
-                  <Link href={`/${locale}/track-order`} className="transition hover:text-charcoal-900">
-                    {nav("trackOrder")}
-                  </Link>
+                  {!isAdminUser ? (
+                    <>
+                      <Link href={`/${locale}/products`} className="transition hover:text-charcoal-900">
+                        {nav("products")}
+                      </Link>
+                      <Link href={`/${locale}/checkout`} className="transition hover:text-charcoal-900">
+                        {nav("checkout")}
+                      </Link>
+                      <Link href={`/${locale}/track-order`} className="transition hover:text-charcoal-900">
+                        {nav("trackOrder")}
+                      </Link>
+                    </>
+                  ) : null}
+                  {canReadProducts ? (
+                    <Link href={`/${locale}/admin/products`} className="transition hover:text-charcoal-900">
+                      {nav("adminProducts")}
+                    </Link>
+                  ) : null}
                   {canReadOrders ? (
                     <Link href={`/${locale}/admin/orders`} className="transition hover:text-charcoal-900">
                       {nav("adminOrders")}
@@ -116,9 +129,10 @@ export default async function LocaleLayout({
                   </summary>
                   <div className="absolute left-4 right-4 top-full mt-2 rounded-2xl border border-charcoal-900/10 bg-cream-50 p-3 shadow-lg shadow-charcoal-900/10">
                     <nav className="grid gap-2 text-sm font-semibold text-charcoal-800">
-                      <Link href={`/${locale}/products`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("products")}</Link>
-                      <Link href={`/${locale}/checkout`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("checkout")}</Link>
-                      <Link href={`/${locale}/track-order`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("trackOrder")}</Link>
+                      {!isAdminUser ? <Link href={`/${locale}/products`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("products")}</Link> : null}
+                      {!isAdminUser ? <Link href={`/${locale}/checkout`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("checkout")}</Link> : null}
+                      {!isAdminUser ? <Link href={`/${locale}/track-order`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("trackOrder")}</Link> : null}
+                      {canReadProducts ? <Link href={`/${locale}/admin/products`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminProducts")}</Link> : null}
                       {canReadOrders ? <Link href={`/${locale}/admin/orders`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminOrders")}</Link> : null}
                       {canReviewPayments ? <Link href={`/${locale}/admin/payments`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminPayments")}</Link> : null}
                       {canManageDelivery ? <Link href={`/${locale}/admin/delivery`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminDelivery")}</Link> : null}
@@ -130,16 +144,20 @@ export default async function LocaleLayout({
                 </details>
               </div>
               <div className="flex items-center gap-2">
-                <Link
-                  href={`/${locale}/auth/sign-in`}
-                  className="rounded-full border border-charcoal-900/20 bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 transition hover:bg-cream-100"
-                >
-                  {nav("connect")}
-                </Link>
+                {session?.user?.id ? (
+                  <LogoutButton label={nav("logout")} locale={locale} />
+                ) : (
+                  <Link
+                    href={`/${locale}/auth/sign-in`}
+                    className="rounded-full border border-charcoal-900/20 bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 transition hover:bg-cream-100"
+                  >
+                    {nav("connect")}
+                  </Link>
+                )}
                 <LanguageSwitcher />
               </div>
             </header>
-            <main className="flex-1 py-8">{children}</main>
+            <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 animate-fade-up-delay-1">{children}</main>
           </div>
           <WhatsAppFloat />
         </IntlProvider>

@@ -27,6 +27,7 @@
     "date-fns": "^4.1.0",
     "decimal.js": "^10.6.0",
     "framer-motion": "^12.38.0",
+    "leaflet": "^1.9.4",
     "lucide-react": "^1.6.0",
     "next": "^14.2.33",
     "next-auth": "^4.24.13",
@@ -35,6 +36,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.72.0",
+    "react-leaflet": "^4.2.1",
     "recharts": "^3.8.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",

@@ -1,7 +1,18 @@
 "use client";
 
-import {useMemo, useState} from "react";
+import {useMemo, useRef, useState} from "react";
+import dynamic from "next/dynamic";
 import {useRouter} from "next/navigation";
+
+const DeliveryLocationPickerMap = dynamic(
+  () => import("@/components/storefront/delivery-location-picker-map").then((module) => module.DeliveryLocationPickerMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 w-full animate-pulse rounded-xl border border-charcoal-900/20 bg-white" />
+    ),
+  }
+);
 
 type DeliveryZone = {
   id: string;
@@ -9,6 +20,38 @@ type DeliveryZone = {
   zoneName: string;
   deliveryPrice: string;
 };
+
+const STATIC_ZONE_COORDINATES: Record<string, [number, number]> = {
+  "douala|bonamoussadi": [4.07252, 9.75735],
+  "yaounde|bastos": [3.89812, 11.51723],
+  "yaounde|mokolo centre": [3.86791, 11.51584],
+  "yaounde|odza carrefour": [3.77592, 11.54829],
+};
+
+const STATIC_CITY_COORDINATES: Record<string, [number, number]> = {
+  yaounde: [3.84803, 11.50208],
+  douala: [4.05106, 9.76787],
+};
+
+function normalizeLocationPart(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function getStaticCoordinates(zone: DeliveryZone): [number, number] | null {
+  const cityKey = normalizeLocationPart(zone.city);
+  const zoneKey = normalizeLocationPart(zone.zoneName);
+  const zoneMatch = STATIC_ZONE_COORDINATES[`${cityKey}|${zoneKey}`];
+
+  if (zoneMatch) {
+    return zoneMatch;
+  }
+
+  return STATIC_CITY_COORDINATES[cityKey] ?? null;
+}
 
 type CheckoutFormProps = {
   locale: string;
@@ -33,6 +76,21 @@ type CheckoutFormProps = {
     mtnMomo: string;
     bankTransfer: string;
     deliveryZone: string;
+    deliveryLocationTitle: string;
+    deliveryLocationHelp: string;
+    useCurrentLocation: string;
+    detectingLocation: string;
+    locationUnsupported: string;
+    locationPermissionDenied: string;
+    locationRequired: string;
+    locationSelected: string;
+    mapClickHint: string;
+    selectedAddress: string;
+    resolvingAddress: string;
+    addressUnavailable: string;
+    latitude: string;
+    longitude: string;
+    zoneAutoFillHint: string;
     notes: string;
     subtotal: string;
     deliveryFee: string;
@@ -53,6 +111,14 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
   const [paymentMethod, setPaymentMethod] = useState<"ORANGE_MONEY" | "MTN_MOMO" | "BANK_TRANSFER">("ORANGE_MONEY");
   const [paymentReference, setPaymentReference] = useState("");
   const [deliveryZoneId, setDeliveryZoneId] = useState("");
+  const [deliveryLatitude, setDeliveryLatitude] = useState<number | null>(null);
+  const [deliveryLongitude, setDeliveryLongitude] = useState<number | null>(null);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([3.848, 11.502]);
+  const [resolvedAddress, setResolvedAddress] = useState<string>("");
+  const [isResolvingAddress, setIsResolvingAddress] = useState(false);
+  const [isResolvingZone, setIsResolvingZone] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,6 +133,9 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
   const deliveryFee = deliveryMethod === "DELIVERY" ? Number(selectedZone?.deliveryPrice ?? 0) : 0;
   const subtotal = unitPrice * quantity;
   const total = subtotal + deliveryFee;
+  const hasSelectedLocation = deliveryLatitude !== null && deliveryLongitude !== null;
+  const latestLookupTokenRef = useRef(0);
+  const latestZoneLookupTokenRef = useRef(0);
 
   const formatter = useMemo(
     () =>
@@ -82,6 +151,11 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
 
     if (deliveryMethod === "DELIVERY" && !deliveryZoneId) {
       setError(labels.errorFallback);
+      return;
+    }
+
+    if (deliveryMethod === "DELIVERY" && !hasSelectedLocation) {
+      setError(labels.locationRequired);
       return;
     }
 
@@ -101,6 +175,8 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
           customerEmail: customerEmail || undefined,
           deliveryMethod,
           deliveryZoneId: deliveryMethod === "DELIVERY" ? deliveryZoneId : undefined,
+          deliveryLatitude: deliveryMethod === "DELIVERY" ? deliveryLatitude : undefined,
+          deliveryLongitude: deliveryMethod === "DELIVERY" ? deliveryLongitude : undefined,
           paymentMethod,
           paymentReference: paymentReference || undefined,
           notes: notes || undefined,
@@ -137,6 +213,186 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function updateSelectedLocation(latitude: number, longitude: number) {
+    const normalizedLatitude = Number(latitude.toFixed(6));
+    const normalizedLongitude = Number(longitude.toFixed(6));
+
+    setDeliveryLatitude(normalizedLatitude);
+    setDeliveryLongitude(normalizedLongitude);
+    setMapCenter([normalizedLatitude, normalizedLongitude]);
+    setLocationError(null);
+    void resolveAddress(normalizedLatitude, normalizedLongitude);
+  }
+
+  async function resolveAddress(latitude: number, longitude: number) {
+    const lookupToken = Date.now();
+    latestLookupTokenRef.current = lookupToken;
+    setIsResolvingAddress(true);
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+      );
+
+      if (!response.ok) {
+        if (latestLookupTokenRef.current === lookupToken) {
+          setResolvedAddress("");
+        }
+        return;
+      }
+
+      const payload = (await response.json()) as {
+        display_name?: string;
+        address?: {
+          city?: string;
+          town?: string;
+          village?: string;
+          state?: string;
+          country?: string;
+        };
+      };
+
+      if (latestLookupTokenRef.current !== lookupToken) {
+        return;
+      }
+
+      const fallbackParts = [
+        payload.address?.city || payload.address?.town || payload.address?.village,
+        payload.address?.state,
+        payload.address?.country,
+      ].filter(Boolean);
+
+      const readableAddress = payload.display_name || fallbackParts.join(", ");
+      setResolvedAddress(readableAddress || "");
+    } catch {
+      if (latestLookupTokenRef.current === lookupToken) {
+        setResolvedAddress("");
+      }
+    } finally {
+      if (latestLookupTokenRef.current === lookupToken) {
+        setIsResolvingAddress(false);
+      }
+    }
+  }
+
+  async function tryResolveZoneCoordinates(zoneId: string) {
+    const zone = deliveryZones.find((item) => item.id === zoneId);
+    if (!zone) {
+      return;
+    }
+
+    setResolvedAddress(`${zone.zoneName}, ${zone.city}, Cameroon`);
+    setLocationError(null);
+
+    const staticCoordinates = getStaticCoordinates(zone);
+    let hasAnyCoordinates = false;
+
+    if (staticCoordinates) {
+      hasAnyCoordinates = true;
+      updateSelectedLocation(staticCoordinates[0], staticCoordinates[1]);
+    }
+
+    const lookupToken = Date.now();
+    latestZoneLookupTokenRef.current = lookupToken;
+    setIsResolvingZone(true);
+
+    try {
+      const query = encodeURIComponent(`${zone.zoneName}, ${zone.city}, Cameroon`);
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${query}`
+      );
+
+      if (!response.ok || latestZoneLookupTokenRef.current !== lookupToken) {
+        return;
+      }
+
+      const payload = (await response.json()) as Array<{lat: string; lon: string}>;
+      const first = payload[0];
+
+      if (!first) {
+        if (!hasAnyCoordinates) {
+          setLocationError(labels.addressUnavailable);
+        }
+        return;
+      }
+
+      const latitude = Number(first.lat);
+      const longitude = Number(first.lon);
+      if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+        hasAnyCoordinates = true;
+        updateSelectedLocation(latitude, longitude);
+      }
+    } catch {
+      if (!hasAnyCoordinates) {
+        setLocationError(labels.addressUnavailable);
+      }
+    } finally {
+      if (latestZoneLookupTokenRef.current === lookupToken) {
+        setIsResolvingZone(false);
+      }
+    }
+  }
+
+  function updateManualCoordinate(type: "lat" | "lng", value: string) {
+    if (value.trim() === "") {
+      if (type === "lat") {
+        setDeliveryLatitude(null);
+      } else {
+        setDeliveryLongitude(null);
+      }
+      return;
+    }
+
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      return;
+    }
+
+    if (type === "lat") {
+      setDeliveryLatitude(parsed);
+    } else {
+      setDeliveryLongitude(parsed);
+    }
+  }
+
+  function applyManualCoordinates() {
+    if (deliveryLatitude === null || deliveryLongitude === null) {
+      return;
+    }
+
+    updateSelectedLocation(deliveryLatitude, deliveryLongitude);
+  }
+
+  function handleUseCurrentLocation() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationError(labels.locationUnsupported);
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        updateSelectedLocation(position.coords.latitude, position.coords.longitude);
+        setIsLocating(false);
+      },
+      (geoError) => {
+        if (geoError.code === geoError.PERMISSION_DENIED) {
+          setLocationError(labels.locationPermissionDenied);
+        } else {
+          setLocationError(labels.errorFallback);
+        }
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
   }
 
   return (
@@ -237,22 +493,105 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
       </div>
 
       {deliveryMethod === "DELIVERY" ? (
-        <label className="text-sm text-charcoal-700">
-          <span className="mb-1 block font-semibold">{labels.deliveryZone}</span>
-          <select
-            required
-            value={deliveryZoneId}
-            onChange={(event) => setDeliveryZoneId(event.target.value)}
-            className="w-full rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-charcoal-900 outline-none ring-rose-gold-300/70 transition focus:ring"
-          >
-            <option value="">--</option>
-            {deliveryZones.map((zone) => (
-              <option key={zone.id} value={zone.id}>
-                {zone.city} - {zone.zoneName} (+{formatter.format(Number(zone.deliveryPrice))} XAF)
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="space-y-4">
+          <label className="text-sm text-charcoal-700">
+            <span className="mb-1 block font-semibold">{labels.deliveryZone}</span>
+            <select
+              required
+              value={deliveryZoneId}
+              onChange={(event) => {
+                const nextZoneId = event.target.value;
+                setDeliveryZoneId(nextZoneId);
+
+                if (!nextZoneId) {
+                  setDeliveryLatitude(null);
+                  setDeliveryLongitude(null);
+                  setResolvedAddress("");
+                  return;
+                }
+
+                if (nextZoneId) {
+                  void tryResolveZoneCoordinates(nextZoneId);
+                }
+              }}
+              className="w-full rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-charcoal-900 outline-none ring-rose-gold-300/70 transition focus:ring"
+            >
+              <option value="">--</option>
+              {deliveryZones.map((zone) => (
+                <option key={zone.id} value={zone.id}>
+                  {zone.city} - {zone.zoneName} (+{formatter.format(Number(zone.deliveryPrice))} XAF)
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-charcoal-600">
+              {isResolvingZone ? labels.resolvingAddress : labels.zoneAutoFillHint}
+            </p>
+          </label>
+
+          <section className="space-y-2 rounded-xl border border-charcoal-900/10 bg-white p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-charcoal-800">{labels.deliveryLocationTitle}</p>
+                <p className="text-xs text-charcoal-600">{labels.deliveryLocationHelp}</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleUseCurrentLocation}
+                disabled={isLocating}
+                className="rounded-lg border border-charcoal-900/20 px-3 py-1.5 text-xs font-semibold text-charcoal-900 disabled:opacity-60"
+              >
+                {isLocating ? labels.detectingLocation : labels.useCurrentLocation}
+              </button>
+            </div>
+
+            <p className="text-xs text-charcoal-600">{labels.mapClickHint}</p>
+
+            <DeliveryLocationPickerMap
+              center={mapCenter}
+              selectedLocation={hasSelectedLocation ? [deliveryLatitude, deliveryLongitude] : null}
+              onSelectLocation={updateSelectedLocation}
+            />
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-xs text-charcoal-700">
+                <span className="mb-1 block font-semibold">{labels.latitude}</span>
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={deliveryLatitude ?? ""}
+                  onChange={(event) => updateManualCoordinate("lat", event.target.value)}
+                  onBlur={applyManualCoordinates}
+                  className="w-full rounded-lg border border-charcoal-900/20 px-2 py-1.5 text-charcoal-900"
+                />
+              </label>
+              <label className="text-xs text-charcoal-700">
+                <span className="mb-1 block font-semibold">{labels.longitude}</span>
+                <input
+                  type="number"
+                  step="0.000001"
+                  value={deliveryLongitude ?? ""}
+                  onChange={(event) => updateManualCoordinate("lng", event.target.value)}
+                  onBlur={applyManualCoordinates}
+                  className="w-full rounded-lg border border-charcoal-900/20 px-2 py-1.5 text-charcoal-900"
+                />
+              </label>
+            </div>
+
+            <p className="text-xs text-charcoal-700">
+              {hasSelectedLocation
+                ? `${labels.locationSelected}: ${deliveryLatitude?.toFixed(6)}, ${deliveryLongitude?.toFixed(6)}`
+                : labels.locationRequired}
+            </p>
+
+            <p className="text-xs text-charcoal-700">
+              {isResolvingAddress
+                ? `${labels.selectedAddress}: ${labels.resolvingAddress}`
+                : `${labels.selectedAddress}: ${resolvedAddress || labels.addressUnavailable}`}
+            </p>
+
+            {locationError ? <p className="text-xs font-semibold text-red-700">{locationError}</p> : null}
+          </section>
+        </div>
       ) : null}
 
       <label className="text-sm text-charcoal-700">

@@ -7,6 +7,8 @@ import {z} from "zod";
 import {prisma} from "@/lib/prisma";
 import {resolveUserAccess} from "@/lib/rbac";
 
+const ACCESS_REFRESH_TTL_SECONDS = 300;
+
 const signInSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
@@ -80,6 +82,15 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
+      const now = Math.floor(Date.now() / 1000);
+      const lastLoaded = typeof token.accessLoadedAt === "number" ? token.accessLoadedAt : 0;
+      const hasCachedAccess = Array.isArray(token.roles) && Array.isArray(token.permissions);
+      const shouldRefresh = !hasCachedAccess || now - lastLoaded > ACCESS_REFRESH_TTL_SECONDS || Boolean(user?.id);
+
+      if (!shouldRefresh) {
+        return token;
+      }
+
       const activeUser = await prisma.user.findUnique({
         where: {id: token.sub},
         select: {
@@ -95,6 +106,7 @@ export const authOptions: NextAuthOptions = {
       if (!activeUser || activeUser.deletedAt || activeUser.status !== "ACTIVE") {
         token.roles = [];
         token.permissions = [];
+        token.accessLoadedAt = now;
         return token;
       }
 
@@ -104,6 +116,7 @@ export const authOptions: NextAuthOptions = {
       token.name = `${activeUser.firstName} ${activeUser.lastName}`;
       token.roles = access.roles;
       token.permissions = access.permissions;
+      token.accessLoadedAt = now;
 
       return token;
     },

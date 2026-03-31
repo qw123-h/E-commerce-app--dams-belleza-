@@ -54,6 +54,8 @@ type Props = {
 };
 
 export function DeliveryOperations({zones, riders, orders, labels}: Props) {
+  const [zoneList, setZoneList] = useState<Zone[]>(zones);
+  const [riderList, setRiderList] = useState<Rider[]>(riders);
   const [zoneName, setZoneName] = useState("");
   const [zoneCity, setZoneCity] = useState("");
   const [zonePrice, setZonePrice] = useState(1000);
@@ -62,13 +64,23 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
   const [selectedOrderId, setSelectedOrderId] = useState(orders[0]?.id ?? "");
   const [selectedRiderId, setSelectedRiderId] = useState(riders[0]?.id ?? "");
   const [isPending, startTransition] = useTransition();
+  const [feedback, setFeedback] = useState<{type: "success" | "error"; text: string} | null>(null);
 
-  function refreshHard() {
-    window.location.reload();
+  function showFeedback(type: "success" | "error", text: string) {
+    setFeedback({type, text});
+    setTimeout(() => setFeedback(null), 3500);
   }
 
   function createZone() {
-    if (!zoneName.trim() || !zoneCity.trim()) return;
+    if (!zoneName.trim() || !zoneCity.trim()) {
+      showFeedback("error", "Please enter zone and city before adding.");
+      return;
+    }
+
+    if (!Number.isFinite(Number(zonePrice)) || Number(zonePrice) <= 0) {
+      showFeedback("error", "Please enter a valid delivery price.");
+      return;
+    }
 
     startTransition(async () => {
       const response = await fetch("/api/delivery/zones", {
@@ -76,7 +88,20 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({zoneName, city: zoneCity, deliveryPrice: Number(zonePrice)}),
       });
-      if (response.ok) refreshHard();
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        showFeedback("error", data.message ?? "Could not add zone");
+        return;
+      }
+
+      if (data.zone) {
+        setZoneList((prev) => [...prev, {...data.zone, deliveryPrice: data.zone.deliveryPrice.toString()}]);
+      }
+      setZoneName("");
+      setZoneCity("");
+      setZonePrice(1000);
+      showFeedback("success", "Zone added");
     });
   }
 
@@ -87,12 +112,21 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({isActive: !isActive}),
       });
-      if (response.ok) refreshHard();
+
+      if (!response.ok) {
+        showFeedback("error", "Could not update zone");
+        return;
+      }
+
+      setZoneList((prev) => prev.map((zone) => (zone.id === zoneId ? {...zone, isActive: !isActive} : zone)));
     });
   }
 
   function createRiderAction() {
-    if (!riderName.trim() || !riderPhone.trim()) return;
+    if (!riderName.trim() || !riderPhone.trim()) {
+      showFeedback("error", "Please enter rider name and phone before adding.");
+      return;
+    }
 
     startTransition(async () => {
       const response = await fetch("/api/delivery/riders", {
@@ -100,7 +134,22 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({fullName: riderName, phone: riderPhone}),
       });
-      if (response.ok) refreshHard();
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        showFeedback("error", data.message ?? "Could not add rider");
+        return;
+      }
+
+      if (data.rider) {
+        setRiderList((prev) => [...prev, data.rider]);
+        if (!selectedRiderId) {
+          setSelectedRiderId(data.rider.id);
+        }
+      }
+      setRiderName("");
+      setRiderPhone("");
+      showFeedback("success", "Rider added");
     });
   }
 
@@ -111,7 +160,13 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({isActive: !isActive}),
       });
-      if (response.ok) refreshHard();
+
+      if (!response.ok) {
+        showFeedback("error", "Could not update rider");
+        return;
+      }
+
+      setRiderList((prev) => prev.map((rider) => (rider.id === riderId ? {...rider, isActive: !isActive} : rider)));
     });
   }
 
@@ -124,7 +179,11 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({orderId: selectedOrderId, riderId: selectedRiderId}),
       });
-      if (response.ok) refreshHard();
+      if (!response.ok) {
+        showFeedback("error", "Could not assign rider");
+        return;
+      }
+      window.location.reload();
     });
   }
 
@@ -135,12 +194,22 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({status}),
       });
-      if (response.ok) refreshHard();
+      if (!response.ok) {
+        showFeedback("error", "Could not update delivery status");
+        return;
+      }
+      window.location.reload();
     });
   }
 
   return (
     <section className="grid gap-6 lg:grid-cols-2">
+      {feedback ? (
+        <div className={`rounded-xl px-4 py-3 text-sm font-semibold lg:col-span-2 ${feedback.type === "success" ? "border border-green-500/30 bg-green-50 text-green-800" : "border border-red-500/30 bg-red-50 text-red-800"}`}>
+          {feedback.text}
+        </div>
+      ) : null}
+
       <article className="space-y-4 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-5">
         <h2 className="font-display text-2xl text-charcoal-900">{labels.zones}</h2>
         <div className="grid gap-2 sm:grid-cols-4">
@@ -150,7 +219,7 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
           <button onClick={createZone} className="rounded-xl bg-charcoal-900 px-3 py-2 text-sm font-semibold text-cream-50">{isPending ? labels.saving : labels.addZone}</button>
         </div>
         <ul className="space-y-2">
-          {zones.map((zone) => (
+          {zoneList.map((zone) => (
             <li key={zone.id} className="flex items-center justify-between rounded-xl border border-charcoal-900/10 bg-white px-3 py-2 text-sm">
               <span>{zone.city} - {zone.zoneName} ({zone.deliveryPrice} XAF)</span>
               <button onClick={() => toggleZone(zone.id, zone.isActive)} className="rounded-lg border border-charcoal-900/20 px-2 py-1 text-xs font-semibold">
@@ -169,7 +238,7 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
           <button onClick={createRiderAction} className="rounded-xl bg-charcoal-900 px-3 py-2 text-sm font-semibold text-cream-50">{isPending ? labels.saving : labels.addRider}</button>
         </div>
         <ul className="space-y-2">
-          {riders.map((rider) => (
+          {riderList.map((rider) => (
             <li key={rider.id} className="flex items-center justify-between rounded-xl border border-charcoal-900/10 bg-white px-3 py-2 text-sm">
               <span>{rider.fullName} ({rider.phone})</span>
               <button onClick={() => toggleRider(rider.id, rider.isActive)} className="rounded-lg border border-charcoal-900/20 px-2 py-1 text-xs font-semibold">
@@ -189,7 +258,7 @@ export function DeliveryOperations({zones, riders, orders, labels}: Props) {
             ))}
           </select>
           <select value={selectedRiderId} onChange={(event) => setSelectedRiderId(event.target.value)} className="rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-sm">
-            {riders.filter((rider) => rider.isActive).map((rider) => (
+            {riderList.filter((rider) => rider.isActive).map((rider) => (
               <option key={rider.id} value={rider.id}>{rider.fullName}</option>
             ))}
           </select>

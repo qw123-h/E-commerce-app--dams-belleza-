@@ -17,12 +17,19 @@ export async function POST(request: Request) {
     return NextResponse.json({message: "Invalid zone payload"}, {status: 400});
   }
 
-  const zone = await createDeliveryZone({
-    zoneName: body.zoneName.trim(),
-    city: body.city.trim(),
-    deliveryPrice: body.deliveryPrice,
-    isActive: body.isActive,
-  });
+  try {
+    const zone = await createDeliveryZone({
+      zoneName: body.zoneName.trim(),
+      city: body.city.trim(),
+      deliveryPrice: body.deliveryPrice,
+      isActive: body.isActive,
+    });
 
-  return NextResponse.json({zone}, {status: 201});
+    return NextResponse.json({zone}, {status: 201});
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      return NextResponse.json({message: "Zone already exists for this city"}, {status: 409});
+    }
+    return NextResponse.json({message: "Could not create zone"}, {status: 400});
+  }
 }

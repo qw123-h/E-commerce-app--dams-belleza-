@@ -3,8 +3,10 @@
 import {FormEvent, useState} from "react";
 import {signIn} from "next-auth/react";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
 
 type SignInFormProps = {
+  locale: string;
   callbackUrl: string;
   labels: {
     email: string;
@@ -12,10 +14,13 @@ type SignInFormProps = {
     submit: string;
     loading: string;
     invalidCredentials: string;
+    forgotPassword: string;
+    noAccount: string;
+    createAccountLink: string;
   };
 };
 
-export function SignInForm({callbackUrl, labels}: SignInFormProps) {
+export function SignInForm({locale, callbackUrl, labels}: SignInFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,17 +37,17 @@ export function SignInForm({callbackUrl, labels}: SignInFormProps) {
       password,
       callbackUrl,
       redirect: false,
-    });
+    }).catch(() => null);
 
-    setIsSubmitting(false);
-
-    if (!response || response.error) {
+    if (!response || response.error || !response.ok) {
+      setIsSubmitting(false);
       setError(labels.invalidCredentials);
       return;
     }
 
-    router.push(response.url ?? callbackUrl);
+    router.replace(callbackUrl);
     router.refresh();
+    setIsSubmitting(false);
   }
 
   return (
@@ -78,6 +83,19 @@ export function SignInForm({callbackUrl, labels}: SignInFormProps) {
       >
         {isSubmitting ? labels.loading : labels.submit}
       </button>
+
+      <p className="text-right text-sm">
+        <Link href={`/${locale}/auth/forgot-password`} className="font-semibold text-charcoal-900 underline">
+          {labels.forgotPassword}
+        </Link>
+      </p>
+
+      <p className="text-center text-sm text-charcoal-700">
+        {labels.noAccount}{" "}
+        <Link href={`/${locale}/auth/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`} className="font-semibold text-charcoal-900 underline">
+          {labels.createAccountLink}
+        </Link>
+      </p>
     </form>
   );
 }

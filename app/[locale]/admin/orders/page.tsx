@@ -75,7 +75,9 @@ export default async function AdminOrdersPage({
                 .find((part) => part.toLowerCase().startsWith("phone:"));
               const rawPhone = phoneLine?.split(":")[1]?.trim() ?? "";
               const whatsappPhone = rawPhone.replace(/\D/g, "");
-              const itemText = order.items.map((item) => `${item.quantity}x ${item.product.name}`).join(", ");
+              const itemText = order.items.length
+                ? order.items.map((item) => `${item.quantity}x ${item.product.name}`).join(", ")
+                : t("table.noItems");
 
               return (
                 <tr key={order.id}>

@@ -38,8 +38,11 @@ export default async function TrackOrderPage({
   const orderNumber = asSingle(searchParams?.order)?.trim();
   const phone = normalizePhone(asSingle(searchParams?.phone));
 
+  const lookupByOrder = Boolean(orderNumber && phone);
+  const lookupByPhoneOnly = Boolean(!orderNumber && phone);
+
   const order =
-    orderNumber && phone
+    lookupByOrder
       ? await prisma.order.findFirst({
           where: {
             orderNumber,
@@ -70,6 +73,31 @@ export default async function TrackOrderPage({
 
   const matchesPhone = order ? extractPhoneFromNotes(order.notes) === phone : false;
 
+  const recentOrdersByPhone = lookupByPhoneOnly
+    ? (await prisma.order.findMany({
+        where: {
+          deletedAt: null,
+          notes: {
+            contains: "Phone:",
+            mode: "insensitive",
+          },
+        },
+        select: {
+          orderNumber: true,
+          status: true,
+          createdAt: true,
+          notes: true,
+          deliveryMethod: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 40,
+      }))
+        .filter((item) => extractPhoneFromNotes(item.notes) === phone)
+        .slice(0, 5)
+    : [];
+
   return (
     <section className="space-y-6">
       <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-7 shadow-lg shadow-charcoal-900/5">
@@ -95,7 +123,7 @@ export default async function TrackOrderPage({
         </button>
       </form>
 
-      {orderNumber && phone ? (
+      {lookupByOrder ? (
         order && matchesPhone ? (
           <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
             <p className="text-xs uppercase tracking-[0.12em] text-charcoal-600">{t("orderNumber")}</p>
@@ -130,6 +158,38 @@ export default async function TrackOrderPage({
                 </Link>
               </div>
             ) : null}
+          </article>
+        ) : (
+          <div className="rounded-3xl border border-dashed border-charcoal-900/20 bg-cream-50 p-8 text-center text-charcoal-700">
+            {t("notFound")}
+          </div>
+        )
+      ) : lookupByPhoneOnly ? (
+        recentOrdersByPhone.length > 0 ? (
+          <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
+            <p className="text-sm font-semibold text-charcoal-900">{t("foundByPhoneTitle")}</p>
+            <p className="mt-1 text-sm text-charcoal-700">{t("foundByPhoneSubtitle")}</p>
+
+            <div className="mt-4 space-y-3">
+              {recentOrdersByPhone.map((candidate) => (
+                <div key={candidate.orderNumber} className="rounded-2xl border border-charcoal-900/10 bg-white p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-charcoal-600">{t("orderNumber")}</p>
+                      <p className="text-base font-semibold text-charcoal-900">{candidate.orderNumber}</p>
+                    </div>
+                    <Link
+                      href={`/${locale}/track-order?order=${encodeURIComponent(candidate.orderNumber)}&phone=${encodeURIComponent(asSingle(searchParams?.phone) ?? "")}`}
+                      className="rounded-xl bg-charcoal-900 px-3 py-2 text-xs font-semibold text-cream-50"
+                    >
+                      {t("check")}
+                    </Link>
+                  </div>
+                  <p className="mt-2 text-xs text-charcoal-700">{t("orderStatus")}: {candidate.status}</p>
+                  <p className="text-xs text-charcoal-700">{t("deliveryMethod")}: {candidate.deliveryMethod}</p>
+                </div>
+              ))}
+            </div>
           </article>
         ) : (
           <div className="rounded-3xl border border-dashed border-charcoal-900/20 bg-cream-50 p-8 text-center text-charcoal-700">

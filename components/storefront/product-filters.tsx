@@ -32,7 +32,7 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
     <form
       action={`/${locale}/products`}
       method="GET"
-      className="grid gap-3 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-5 shadow-lg shadow-charcoal-900/5 md:grid-cols-12"
+      className="grid gap-3 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-5 shadow-lg shadow-charcoal-900/5 md:grid-cols-12 animate-fade-up-delay-1"
     >
       <div className="md:col-span-4">
         <label htmlFor="q" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-700">

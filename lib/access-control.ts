@@ -40,6 +40,9 @@ const PUBLIC_PATHS = new Set<string>([
   "/track-order",
   "/unauthorized",
   "/auth/sign-in",
+  "/auth/sign-up",
+  "/auth/forgot-password",
+  "/auth/reset-password",
 ]);
 
 export function stripLocalePath(pathname: string): string {
@@ -61,8 +64,14 @@ export function isPublicPagePath(pathname: string): boolean {
 }
 
 export function getPageRequiredPermission(pathname: string): string | null {
-  const matched = PAGE_RULES.find((rule) => pathname === rule.prefix || pathname.startsWith(`${rule.prefix}/`));
-  return matched?.permission ?? null;
+  const matches = PAGE_RULES.filter((rule) => pathname === rule.prefix || pathname.startsWith(`${rule.prefix}/`));
+
+  if (!matches.length) {
+    return null;
+  }
+
+  matches.sort((a, b) => b.prefix.length - a.prefix.length);
+  return matches[0].permission;
 }
 
 export function getApiRequiredPermission(pathname: string, method: string): string | null {

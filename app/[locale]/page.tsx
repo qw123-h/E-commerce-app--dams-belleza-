@@ -1,8 +1,11 @@
 import Link from "next/link";
 import {getTranslations} from "next-intl/server";
+import {redirect} from "next/navigation";
 import {formatXaf} from "@/lib/format";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
+import {auth} from "@/lib/auth";
+import {sessionHasPermission} from "@/lib/rbac";
 
 export default async function HomePage({
   params,
@@ -10,6 +13,18 @@ export default async function HomePage({
   params?: {locale: string};
 }) {
   const locale = params?.locale ?? routing.defaultLocale;
+  const session = await auth();
+  const isAdminUser =
+    sessionHasPermission(session, "orders.read") ||
+    sessionHasPermission(session, "payments.review") ||
+    sessionHasPermission(session, "reports.read") ||
+    sessionHasPermission(session, "roles.manage") ||
+    sessionHasPermission(session, "orders.write");
+
+  if (isAdminUser) {
+    redirect(`/${locale}/admin/orders`);
+  }
+
   const t = await getTranslations({locale, namespace: "home"});
   const featuredProducts = await prisma.product.findMany({
     where: {
@@ -47,8 +62,8 @@ export default async function HomePage({
   const promoBadges = [t("promo.hot"), t("promo.fastShip"), t("promo.topSupplier")];
 
   return (
-    <section className="space-y-6">
-      <article className="relative overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-16 shadow-2xl shadow-charcoal-900/10 sm:px-10">
+    <section className="space-y-6 animate-fade-up">
+      <article className="relative overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-16 shadow-2xl shadow-charcoal-900/10 sm:px-10 animate-fade-up-delay-1">
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-rose-gold-300/30 blur-3xl" />
         <div className="absolute -bottom-24 -left-12 h-72 w-72 rounded-full bg-charcoal-400/15 blur-3xl" />
         <div className="relative max-w-4xl space-y-6">
@@ -93,7 +108,7 @@ export default async function HomePage({
         </div>
       </article>
 
-      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
+      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5 animate-fade-up-delay-2">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-3xl text-charcoal-900">{t("featuredTitle")}</h2>
           <Link href={`/${locale}/products`} className="text-sm font-semibold text-charcoal-800 underline">
