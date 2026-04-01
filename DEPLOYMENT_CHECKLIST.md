@@ -94,6 +94,15 @@ After deployment, verify:
   - `CLOUDINARY_API_SECRET`
 - Validate one product image upload from admin module after deploy.
 
+## 10) No-Shell Recovery Path (Render)
+
+- If Render Shell is not available:
+  - Set `RUN_SEED_ON_BOOT=true`.
+  - Set `SEED_PASSWORD` to a strong temporary value.
+  - Redeploy once (startup runs migrations and seed).
+  - Validate admin login and health probes.
+  - Set `RUN_SEED_ON_BOOT=false` and redeploy again.
+
 ## 8) Release Decision
 
 Approve release only if all checkpoints above pass.

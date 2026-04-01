@@ -15,7 +15,7 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-const SEED_PASSWORD = "ChangeMe123!";
+const SEED_PASSWORD = process.env.SEED_PASSWORD || "ChangeMe123!";
 
 const PERMISSION_KEYS = [
   ["products.read", "Products", "Read products"],
@@ -143,7 +143,14 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: {email: "admin@damsbelleza.com"},
-    update: {},
+    update: {
+      firstName: "System",
+      lastName: "Admin",
+      phone: "+237691000001",
+      whatsappNumber: "+237691949858",
+      passwordHash,
+      status: UserStatus.ACTIVE,
+    },
     create: {
       email: "admin@damsbelleza.com",
       firstName: "System",
@@ -157,7 +164,14 @@ async function main() {
 
   const owner = await prisma.user.upsert({
     where: {email: "owner@damsbelleza.com"},
-    update: {},
+    update: {
+      firstName: "Dam",
+      lastName: "Belleza",
+      phone: "+237691000002",
+      whatsappNumber: "+237691949858",
+      passwordHash,
+      status: UserStatus.ACTIVE,
+    },
     create: {
       email: "owner@damsbelleza.com",
       firstName: "Dam",
@@ -198,6 +212,7 @@ async function main() {
         lastName: customer.lastName,
         phone: customer.phone,
         whatsappNumber: customer.phone,
+        passwordHash,
         status: UserStatus.ACTIVE,
       },
       create: {
@@ -230,7 +245,14 @@ async function main() {
   for (const helper of helpers) {
     await prisma.user.upsert({
       where: {email: helper.email},
-      update: {},
+      update: {
+        firstName: helper.firstName,
+        lastName: helper.lastName,
+        phone: helper.phone,
+        whatsappNumber: helper.phone,
+        passwordHash,
+        status: UserStatus.ACTIVE,
+      },
       create: {
         ...helper,
         whatsappNumber: helper.phone,

@@ -6,7 +6,7 @@ services:
     region: frankfurt
     rootDir: .
     buildCommand: npm ci && npx prisma generate && npm run build
-    startCommand: npx prisma migrate deploy && npm run start
+    startCommand: npm run start:render
     healthCheckPath: /api/health/ready
     autoDeploy: true
     envVars:
@@ -28,3 +28,7 @@ services:
         sync: false
       - key: STORE_NAME
         value: Dam's belleza
+      - key: RUN_SEED_ON_BOOT
+        value: "false"
+      - key: SEED_PASSWORD
+        sync: false

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "prisma migrate deploy && next start",
+    "start": "next start",
+    "start:render": "prisma migrate deploy && if [ \"$RUN_SEED_ON_BOOT\" = \"true\" ]; then prisma db seed; else echo 'Skipping seed (RUN_SEED_ON_BOOT not true)'; fi && next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "verify:prod": "npm run typecheck && npm run build",

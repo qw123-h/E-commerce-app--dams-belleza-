@@ -103,11 +103,21 @@ This repository now includes `render.yaml` for one-click Blueprint deployment.
 	- Optional Cloudinary vars if using uploads
 4. Deploy. Render will run:
 	- Build: `npm ci && npx prisma generate && npm run build`
-	- Start: `npx prisma migrate deploy && npm run start`
+	- Start: `npm run start:render` (migrate on boot + optional seed)
 5. Verify probes:
 	- `/api/health/live`
 	- `/api/health/ready`
 	- `/api/health`
+
+### Render Without Shell Access (Migrate + Seed)
+
+If Render Shell is unavailable, use env flags and redeploy:
+
+1. Set `RUN_SEED_ON_BOOT=true` in Render env vars.
+2. Optionally set `SEED_PASSWORD` to the password you want for seeded users.
+3. Trigger a manual deploy.
+4. After successful deploy and login validation, set `RUN_SEED_ON_BOOT=false`.
+5. Trigger one more deploy to disable seed-on-boot.
 
 ## Demo Accounts
 
