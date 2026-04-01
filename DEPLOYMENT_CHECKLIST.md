@@ -13,6 +13,11 @@ This checklist is the Phase 14 final polish and release runbook for Dam's bellez
   - `CLOUDINARY_API_SECRET`
 - Confirm `WHATSAPP_NUMBER` and `STORE_NAME`.
 
+Render note:
+
+- If deploying on Render, set these vars in the service settings or use `render.yaml`.
+- Ensure `NEXTAUTH_URL` exactly matches your public Render URL.
+
 ## 2) Database Readiness
 
 - Verify PostgreSQL is reachable from app host.
@@ -29,6 +34,7 @@ npm run prisma:seed
 ```
 
 ## 3) Build Verification
+  - For production image uploads these vars are required.
 
 Run locally or in CI before release:
 
@@ -43,7 +49,10 @@ Expected: typecheck and build both pass with no errors.
 
 After deployment, verify:
 
-- `GET /api/health` returns `200` and `status: ok`.
+- `GET /api/health/live` returns `200` and `status: alive`.
+- `GET /api/health/ready` returns `200` and `status: ok`.
+- `GET /api/health/business` returns `200` and business flow status `ok`.
+- `GET /api/health` returns detailed checks for app, DB, and env.
 - Storefront pages load:
   - `/fr`
   - `/fr/products`
@@ -72,8 +81,18 @@ After deployment, verify:
 ## 7) Monitoring and Recovery
 
 - Capture startup logs and error logs.
-- Track health probe for `/api/health`.
+- Configure Render health check path to `/api/health/ready`.
+- Track `/api/health/live` for process uptime and `/api/health/ready` for dependency readiness.
+- Track `/api/health/business` for checkout-to-delivery operational readiness.
 - Keep database backup/restore procedure documented for the hosting environment.
+
+## 9) Production Upload Validation
+
+- Confirm Cloudinary env vars are set in Render:
+  - `CLOUDINARY_CLOUD_NAME`
+  - `CLOUDINARY_API_KEY`
+  - `CLOUDINARY_API_SECRET`
+- Validate one product image upload from admin module after deploy.
 
 ## 8) Release Decision
 

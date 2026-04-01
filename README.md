@@ -73,10 +73,41 @@ npm run dev
 
 ## Health Check
 
-- Runtime health endpoint: `/api/health`
-- Returns:
-	- `200` when app and DB are reachable
-	- `503` when DB is unreachable
+- Liveness: `/api/health/live` (process is up)
+- Readiness: `/api/health/ready` (app + DB + required env checks)
+- Business flow: `/api/health/business` (checkout-to-delivery dependency checks)
+- Detailed runtime summary: `/api/health`
+- Status behavior:
+	- `200` when ready
+	- `503` when degraded (DB unavailable or required env missing)
+
+## Production Image Upload
+
+- Product image uploads use Cloudinary when these env vars are set:
+	- `CLOUDINARY_CLOUD_NAME`
+	- `CLOUDINARY_API_KEY`
+	- `CLOUDINARY_API_SECRET`
+- In production (`NODE_ENV=production`), image upload endpoint requires Cloudinary configuration.
+- In development, local filesystem upload fallback remains available.
+
+## Render Deployment (Recommended)
+
+This repository now includes `render.yaml` for one-click Blueprint deployment.
+
+1. Push repository to GitHub.
+2. In Render: New > Blueprint and select this repo.
+3. Set secret env vars in Render dashboard:
+	- `DATABASE_URL`
+	- `NEXTAUTH_URL` (your Render public URL)
+	- `NEXTAUTH_SECRET`
+	- Optional Cloudinary vars if using uploads
+4. Deploy. Render will run:
+	- Build: `npm ci && npx prisma generate && npm run build`
+	- Start: `npx prisma migrate deploy && npm run start`
+5. Verify probes:
+	- `/api/health/live`
+	- `/api/health/ready`
+	- `/api/health`
 
 ## Demo Accounts
 
