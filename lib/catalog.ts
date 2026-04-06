@@ -15,6 +15,9 @@ export async function getStorefrontProducts(query: CatalogQuery) {
     where: {
       deletedAt: null,
       isPublished: true,
+      images: {
+        some: {},
+      },
       ...(query.type && query.type !== "ALL" ? {productType: query.type} : {}),
       ...(query.priceMode && query.priceMode !== "ALL" ? {priceMode: query.priceMode} : {}),
       ...(search

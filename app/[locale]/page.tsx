@@ -30,6 +30,9 @@ export default async function HomePage({
     where: {
       isPublished: true,
       deletedAt: null,
+      images: {
+        some: {},
+      },
     },
     select: {
       id: true,
