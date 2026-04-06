@@ -18,7 +18,6 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const SEED_PASSWORD = process.env.SEED_PASSWORD || "ChangeMe123!";
-const PERFUME_IMAGE_DIR = path.resolve(process.cwd(), "public/uploads/products");
 const WIG_IMAGE_DIR = path.resolve(process.cwd(), "public/catalog/real");
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 
@@ -39,11 +38,6 @@ function slugify(value: string) {
     .trim()
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
-}
-
-function imagePlaceholder(type: "perfume" | "wig", slug: string) {
-  const keyword = type === "perfume" ? "perfume,bottle,luxury" : "wig,hair,beauty";
-  return `https://loremflickr.com/1200/1200/${keyword}?lock=${encodeURIComponent(slug)}`;
 }
 
 type LocalSeedImage = {
@@ -79,10 +73,9 @@ function orderDateOffset(daysAgo: number) {
 
 async function main() {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 12);
-  const perfumeSeedImages = readLocalSeedImages(PERFUME_IMAGE_DIR, "/uploads/products", "local/uploads/products");
   const wigSeedImages = readLocalSeedImages(WIG_IMAGE_DIR, "/catalog/real", "local/catalog/real");
 
-  console.log(`Seed image sources -> perfumes: ${perfumeSeedImages.length}, wigs: ${wigSeedImages.length}`);
+  console.log(`Seed image sources -> wigs: ${wigSeedImages.length}`);
 
   const superAdminRole = await prisma.role.upsert({
     where: {slug: "super-admin"},
@@ -468,34 +461,31 @@ async function main() {
     seededProducts.push(product);
   }
 
-  let perfumeIndex = 0;
   let wigIndex = 0;
 
   for (const product of seededProducts) {
     const isPerfume = product.productType === ProductType.PERFUME;
-    const pool = isPerfume ? perfumeSeedImages : wigSeedImages;
-    const imageIndex = isPerfume ? perfumeIndex : wigIndex;
+    const pool = wigSeedImages;
+    const imageIndex = wigIndex;
     const selectedImage = pool.length > 0 ? pool[imageIndex % pool.length] : null;
 
-    if (isPerfume) {
-      perfumeIndex += 1;
-    } else {
+    if (!isPerfume) {
       wigIndex += 1;
     }
 
     await prisma.productImage.deleteMany({where: {productId: product.id}});
-    await prisma.productImage.create({
-      data: {
-        productId: product.id,
-        cloudinaryPublicId: selectedImage
-          ? selectedImage.publicId
-          : `dams-belleza/${isPerfume ? "perfume" : "wig"}/${product.slug}`,
-        url: selectedImage ? selectedImage.url : imagePlaceholder(isPerfume ? "perfume" : "wig", product.slug),
-        altText: selectedImage ? selectedImage.altText : product.slug.replace(/-/g, " "),
-        isPrimary: true,
-        sortOrder: 0,
-      },
-    });
+    if (!isPerfume && selectedImage) {
+      await prisma.productImage.create({
+        data: {
+          productId: product.id,
+          cloudinaryPublicId: selectedImage.publicId,
+          url: selectedImage.url,
+          altText: selectedImage.altText,
+          isPrimary: true,
+          sortOrder: 0,
+        },
+      });
+    }
 
     await prisma.stock.upsert({
       where: {productId: product.id},
