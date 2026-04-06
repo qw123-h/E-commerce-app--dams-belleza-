@@ -1,4 +1,6 @@
 import "dotenv/config";
+import fs from "node:fs";
+import path from "node:path";
 import {
   DeliveryMethod,
   DeliveryStatus,
@@ -16,6 +18,9 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 const SEED_PASSWORD = process.env.SEED_PASSWORD || "ChangeMe123!";
+const PERFUME_IMAGE_DIR = path.resolve(process.cwd(), "public/uploads/products");
+const WIG_IMAGE_DIR = path.resolve(process.cwd(), "public/catalog/real");
+const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 
 const PERMISSION_KEYS = [
   ["products.read", "Products", "Read products"],
@@ -41,6 +46,31 @@ function imagePlaceholder(type: "perfume" | "wig", slug: string) {
   return `https://loremflickr.com/1200/1200/${keyword}?lock=${encodeURIComponent(slug)}`;
 }
 
+type LocalSeedImage = {
+  url: string;
+  publicId: string;
+  altText: string;
+};
+
+function readLocalSeedImages(dirPath: string, publicBasePath: string, publicIdBase: string): LocalSeedImage[] {
+  if (!fs.existsSync(dirPath)) {
+    return [];
+  }
+
+  const files = fs.readdirSync(dirPath)
+    .filter((fileName) => IMAGE_EXTENSIONS.has(path.extname(fileName).toLowerCase()))
+    .sort((a, b) => a.localeCompare(b));
+
+  return files.map((fileName) => {
+    const stem = path.basename(fileName, path.extname(fileName)).replace(/[_-]+/g, " ").trim();
+    return {
+      url: `${publicBasePath}/${encodeURIComponent(fileName)}`,
+      publicId: `${publicIdBase}/${fileName}`,
+      altText: stem || "Product image",
+    };
+  });
+}
+
 function orderDateOffset(daysAgo: number) {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
@@ -49,6 +79,10 @@ function orderDateOffset(daysAgo: number) {
 
 async function main() {
   const passwordHash = await bcrypt.hash(SEED_PASSWORD, 12);
+  const perfumeSeedImages = readLocalSeedImages(PERFUME_IMAGE_DIR, "/uploads/products", "local/uploads/products");
+  const wigSeedImages = readLocalSeedImages(WIG_IMAGE_DIR, "/catalog/real", "local/catalog/real");
+
+  console.log(`Seed image sources -> perfumes: ${perfumeSeedImages.length}, wigs: ${wigSeedImages.length}`);
 
   const superAdminRole = await prisma.role.upsert({
     where: {slug: "super-admin"},
@@ -330,26 +364,26 @@ async function main() {
   ] as const;
 
   const wigCatalog = [
-    ["Silk Body Wave", 45000],
-    ["Lace Frontal Bob", 52000],
-    ["HD Closure Straight", 61000],
-    ["Raw Deep Wave 20", 72000],
-    ["Bone Straight Luxe", 84000],
-    ["Kinky Curly Crown", 56000],
-    ["Water Wave Soft", 59000],
-    ["Burgundy Body Wave", 64000],
-    ["Honey Blonde Bob", 68000],
-    ["Natural Pixie Unit", 43000],
-    ["Boho Curl Frontal", 71000],
-    ["Sleek Yaki Straight", 60000],
-    ["Afro Curl Premium", 57500],
-    ["Layered Bob 12", 50000],
-    ["Front Lace Curly 18", 69500],
-    ["Transparent Lace 24", 88000],
-    ["Soft Loose Wave", 62000],
-    ["Knotless Inspired Unit", 65500],
-    ["Glueless Everyday Bob", 54000],
-    ["Luxury Frontal 28", 93000],
+    ["Cheveux yaki", "Cheveux yaki T24 47000, T26 53000, T28 57000, T30 65000", 47000],
+    ["Closure 2-6", "Closure 2-6 T10 9000, T12 9500, T14 10500, T16 11000, T18 12000, T20 13000", 9000],
+    ["Frontal", "Frontal T12 12000, T14 13000, T16 14000, T18 16000, T20 17500, T24 23000", 12000],
+    ["Fumi bouncy curl sur closure 4-4", "Fumi bouncy curl sur closure 4-4 T24 60000, T12 30000, T10 27000", 27000],
+    ["Fumi bouncy curl sur closure 4-4 T24 64000", "Fumi bouncy curl sur closure 4-4 T24 64000 customise et peigne", 64000],
+    ["Indienne Virgin hair T10-T16", "Indienne Virgin hair T10 20000, T12 23000, T14 27000, T16 30000", 20000],
+    ["Indienne Virgin hair T10-T18", "Indienne Virgin hair T10 21000, T12 23500, T14 28000, T16 31000, T18 36000", 21000],
+    ["Metisse indienne water wave T18-T32", "Metisse indienne water wave T18 35000, T20 39000, T22 43000, T24 47000, T26 53000, T28 57000, T30 65000, T32 75000", 35000],
+    ["Metisse indienne water wave T18-T32 v2", "Metisse indienne water wave T18 35000, T20 39000, T22 43000, T24 47000, T26 53000, T28 57000, T30 65000, T32 75000", 35000],
+    ["Metisse water wave", "Metisse water wave T10 25000, T12 27000, T14 29000, T16 33000", 25000],
+    ["Pindienne Virgin Hair", "Pindienne Virgin Hair T10 20000, T12 23000, T14 27000, T16 30000", 20000],
+    ["Vietanamienne Chine", "Vietanamienne Chine T10 29000", 29000],
+    ["Water wave boucle emma frontal", "Water wave boucle emma disponible sur frontal T20 53000", 53000],
+    ["Water wave boucle emma closure", "Water wave boucle emma sur closure 4-4 T16 40000, T18 50000, T22 58000", 40000],
+    ["Water wave pici curl closure", "Water wave pici curl vaut closure 5-5 T20 53000", 53000],
+    ["Water wave pixi curl sdd T08", "Water wave pixi curl sdd T08 20000, Closure 10000, Frontal 28000", 20000],
+    ["Water wave pixi curl sdd T10", "Water wave pixi curl sdd T10 38000, Frontal 28000", 38000],
+    ["Water wave pixi curl sdd Closure", "Water wave pixi curl sdd T10 Closure 15000", 15000],
+    ["Water wave pixi curl frontal", "Water wave pixi curl sur frontal T16 42000, T20 53000, T22 60000, T24 70000", 42000],
+    ["Water wave pixi curl", "Water wave pixi curl T12 33000, T16 45000", 33000],
   ] as const;
 
   const seededProducts: Array<{id: string; sku: string; slug: string; productType: ProductType}> = [];
@@ -395,7 +429,7 @@ async function main() {
   }
 
   for (let index = 0; index < wigCatalog.length; index += 1) {
-    const [name, costPrice] = wigCatalog[index];
+    const [name, description, costPrice] = wigCatalog[index];
     const sku = `WIG-${String(index + 1).padStart(3, "0")}`;
     const slug = slugify(name);
 
@@ -404,7 +438,7 @@ async function main() {
       update: {
         name,
         slug,
-        description: `${name} - premium custom wig consultation available on WhatsApp.`,
+        description: `${description} - premium custom wig consultation available on WhatsApp.`,
         productType: ProductType.WIG,
         priceMode: PriceMode.NEGOTIABLE,
         salePrice: null,
@@ -417,7 +451,7 @@ async function main() {
         sku,
         name,
         slug,
-        description: `${name} - premium custom wig consultation available on WhatsApp.`,
+        description: `${description} - premium custom wig consultation available on WhatsApp.`,
         productType: ProductType.WIG,
         priceMode: PriceMode.NEGOTIABLE,
         salePrice: null,
@@ -434,14 +468,30 @@ async function main() {
     seededProducts.push(product);
   }
 
+  let perfumeIndex = 0;
+  let wigIndex = 0;
+
   for (const product of seededProducts) {
+    const isPerfume = product.productType === ProductType.PERFUME;
+    const pool = isPerfume ? perfumeSeedImages : wigSeedImages;
+    const imageIndex = isPerfume ? perfumeIndex : wigIndex;
+    const selectedImage = pool.length > 0 ? pool[imageIndex % pool.length] : null;
+
+    if (isPerfume) {
+      perfumeIndex += 1;
+    } else {
+      wigIndex += 1;
+    }
+
     await prisma.productImage.deleteMany({where: {productId: product.id}});
     await prisma.productImage.create({
       data: {
         productId: product.id,
-        cloudinaryPublicId: `dams-belleza/${product.productType === ProductType.PERFUME ? "perfume" : "wig"}/${product.slug}`,
-        url: imagePlaceholder(product.productType === ProductType.PERFUME ? "perfume" : "wig", product.slug),
-        altText: product.slug.replace(/-/g, " "),
+        cloudinaryPublicId: selectedImage
+          ? selectedImage.publicId
+          : `dams-belleza/${isPerfume ? "perfume" : "wig"}/${product.slug}`,
+        url: selectedImage ? selectedImage.url : imagePlaceholder(isPerfume ? "perfume" : "wig", product.slug),
+        altText: selectedImage ? selectedImage.altText : product.slug.replace(/-/g, " "),
         isPrimary: true,
         sortOrder: 0,
       },
