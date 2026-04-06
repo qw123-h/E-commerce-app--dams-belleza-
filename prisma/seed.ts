@@ -64,7 +64,7 @@ function readLocalSeedImages(dirPath: string, publicBasePath: string, publicIdBa
   return files.map((fileName) => {
     const stem = path.basename(fileName, path.extname(fileName)).replace(/[_-]+/g, " ").trim();
     return {
-      url: `${publicBasePath}/${encodeURIComponent(fileName)}`,
+      url: `${publicBasePath}/${fileName}`,
       publicId: `${publicIdBase}/${fileName}`,
       altText: stem || "Product image",
     };
