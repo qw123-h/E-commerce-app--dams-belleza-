@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect} from "react";
+import type {LeafletMouseEvent} from "leaflet";
 import {CircleMarker, MapContainer, TileLayer, useMap, useMapEvents} from "react-leaflet";
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 
 function MapClickHandler({onSelectLocation}: {onSelectLocation: (latitude: number, longitude: number) => void}) {
   useMapEvents({
-    click(event) {
+    click(event: LeafletMouseEvent) {
       onSelectLocation(event.latlng.lat, event.latlng.lng);
     },
   });
