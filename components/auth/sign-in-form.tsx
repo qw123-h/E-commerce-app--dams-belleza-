@@ -4,6 +4,7 @@ import {FormEvent, useState} from "react";
 import {signIn} from "next-auth/react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import {Eye, EyeOff} from "lucide-react";
 
 type SignInFormProps = {
   locale: string;
@@ -24,6 +25,7 @@ export function SignInForm({locale, callbackUrl, labels}: SignInFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -68,13 +70,23 @@ export function SignInForm({locale, callbackUrl, labels}: SignInFormProps) {
 
       <div>
         <label className="mb-2 block text-sm font-semibold text-charcoal-800">{labels.password}</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-          className="w-full rounded-2xl border border-charcoal-900/20 bg-white px-4 py-3 text-charcoal-900 outline-none transition focus:border-rose-gold-500"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+            className="w-full rounded-2xl border border-charcoal-900/20 bg-white px-4 py-3 pr-12 text-charcoal-900 outline-none transition focus:border-rose-gold-500"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute inset-y-0 right-0 inline-flex items-center px-3 text-charcoal-700 transition hover:text-charcoal-900"
+          >
+            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
