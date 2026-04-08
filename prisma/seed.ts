@@ -583,153 +583,21 @@ async function main() {
     orderBy: {sku: "asc"},
   });
 
-  const fixedPriceProducts = allProducts.filter((product) => product.salePrice !== null);
-  const allZones = await prisma.deliveryZone.findMany({where: {isActive: true, deletedAt: null}, orderBy: {zoneName: "asc"}});
-  const allRiders = await prisma.rider.findMany({where: {isActive: true}, orderBy: {fullName: "asc"}});
   const customerUsers = await prisma.user.findMany({
     where: {email: {in: customers.map((customer) => customer.email)}},
     select: {id: true, firstName: true, lastName: true, phone: true},
     orderBy: {email: "asc"},
   });
 
-  const sampleOrders = [
-    {orderNumber: "DB-20260325-1001", customerIndex: 0, productIndexes: [0, 2], status: OrderStatus.DELIVERED, paymentStatus: PaymentStatus.CONFIRMED, daysAgo: 2},
-    {orderNumber: "DB-20260325-1002", customerIndex: 1, productIndexes: [3], status: OrderStatus.DISPATCHED, paymentStatus: PaymentStatus.CONFIRMED, daysAgo: 1},
-    {orderNumber: "DB-20260325-1003", customerIndex: 2, productIndexes: [4, 5], status: OrderStatus.CONFIRMED, paymentStatus: PaymentStatus.PENDING, daysAgo: 0},
-    {orderNumber: "DB-20260325-1004", customerIndex: 0, productIndexes: [6], status: OrderStatus.CANCELLED, paymentStatus: PaymentStatus.REJECTED, daysAgo: 5},
-    {orderNumber: "DB-20260325-1005", customerIndex: 1, productIndexes: [7, 8], status: OrderStatus.DELIVERED, paymentStatus: PaymentStatus.CONFIRMED, daysAgo: 7},
-    {orderNumber: "DB-20260325-1006", customerIndex: 2, productIndexes: [9], status: OrderStatus.PENDING, paymentStatus: PaymentStatus.PENDING, daysAgo: 0},
-  ] as const;
-
-  for (let index = 0; index < sampleOrders.length; index += 1) {
-    const sample = sampleOrders[index];
-    const existing = await prisma.order.findUnique({where: {orderNumber: sample.orderNumber}, select: {id: true}});
-
-    if (existing) {
-      continue;
-    }
-
-    const customer = customerUsers[sample.customerIndex % customerUsers.length];
-    const zone = allZones[index % allZones.length];
-    const deliveryMethod = index % 2 === 0 ? DeliveryMethod.DELIVERY : DeliveryMethod.PICKUP;
-    const orderedProducts = sample.productIndexes
-      .map((productIndex) => fixedPriceProducts[productIndex % fixedPriceProducts.length])
-      .filter(Boolean);
-
-    let subtotal = 0;
-    const itemCreates = orderedProducts.map((product, productIndex) => {
-      const quantity = 1 + ((index + productIndex) % 2);
-      const unitPrice = Number(product.salePrice ?? 0);
-      const totalPrice = unitPrice * quantity;
-      subtotal += totalPrice;
-
-      return {
-        productId: product.id,
-        quantity,
-        unitPrice,
-        totalPrice,
-      };
-    });
-
-    const deliveryAmount = deliveryMethod === DeliveryMethod.DELIVERY ? Number(zone.deliveryPrice) : 0;
-    const totalAmount = subtotal + deliveryAmount;
-    const createdAt = orderDateOffset(sample.daysAgo);
-
-    const order = await prisma.order.create({
-      data: {
-        orderNumber: sample.orderNumber,
-        customerId: customer.id,
-        deliveryZoneId: deliveryMethod === DeliveryMethod.DELIVERY ? zone.id : null,
-        status: sample.status,
-        deliveryMethod,
-        subtotalAmount: subtotal,
-        deliveryAmount,
-        totalAmount,
-        notes: `Guest: ${customer.firstName} ${customer.lastName} | Phone: ${customer.phone}`,
-        createdAt,
-        updatedAt: createdAt,
-        items: {
-          create: itemCreates,
-        },
+  // Remove old seeded demo orders from previous deployments.
+  // This only targets the historic demo prefix and leaves real customer orders untouched.
+  await prisma.order.deleteMany({
+    where: {
+      orderNumber: {
+        startsWith: "DB-20260325-",
       },
-      select: {
-        id: true,
-        orderNumber: true,
-        totalAmount: true,
-      },
-    });
-
-    const paymentMethod =
-      index % 3 === 0
-        ? PaymentMethod.ORANGE_MONEY
-        : index % 3 === 1
-          ? PaymentMethod.MTN_MOMO
-          : PaymentMethod.BANK_TRANSFER;
-
-    const payment = await prisma.payment.create({
-      data: {
-        orderId: order.id,
-        method: paymentMethod,
-        status: sample.paymentStatus,
-        amount: totalAmount,
-        reference: `PAY-REF-${1000 + index}`,
-        rejectedReason: sample.paymentStatus === PaymentStatus.REJECTED ? "Invalid transfer proof" : null,
-        confirmedById: sample.paymentStatus === PaymentStatus.CONFIRMED ? owner.id : null,
-        confirmedAt: sample.paymentStatus === PaymentStatus.CONFIRMED ? createdAt : null,
-        createdAt,
-      },
-      select: {id: true},
-    });
-
-    if (sample.paymentStatus === PaymentStatus.CONFIRMED) {
-      await prisma.paymentScreenshot.create({
-        data: {
-          paymentId: payment.id,
-          cloudinaryPublicId: `dams-belleza/payments/${sample.orderNumber.toLowerCase()}`,
-          url: `https://res.cloudinary.com/demo/image/upload/dams-belleza/payments/${sample.orderNumber.toLowerCase()}.jpg`,
-          uploadedAt: createdAt,
-        },
-      });
-    }
-
-    await prisma.invoice.create({
-      data: {
-        orderId: order.id,
-        invoiceNumber: `INV-${sample.orderNumber.split("-").slice(1).join("-")}`,
-        fileUrl: `/api/documents/invoices/INV-${sample.orderNumber.split("-").slice(1).join("-")}`,
-        generatedAt: createdAt,
-      },
-    });
-
-    if (sample.paymentStatus === PaymentStatus.CONFIRMED) {
-      await prisma.receipt.create({
-        data: {
-          orderId: order.id,
-          receiptNumber: `REC-${sample.orderNumber.split("-").slice(1).join("-")}`,
-          fileUrl: `/api/documents/receipts/REC-${sample.orderNumber.split("-").slice(1).join("-")}`,
-          generatedAt: createdAt,
-        },
-      });
-    }
-
-    if (sample.status === OrderStatus.CONFIRMED || sample.status === OrderStatus.DISPATCHED || sample.status === OrderStatus.DELIVERED) {
-      await prisma.delivery.create({
-        data: {
-          orderId: order.id,
-          riderId: allRiders[index % allRiders.length]?.id,
-          assignedById: owner.id,
-          status:
-            sample.status === OrderStatus.DELIVERED
-              ? DeliveryStatus.DELIVERED
-              : sample.status === OrderStatus.DISPATCHED
-                ? DeliveryStatus.IN_TRANSIT
-                : DeliveryStatus.ASSIGNED,
-          dispatchedAt: sample.status === OrderStatus.DISPATCHED || sample.status === OrderStatus.DELIVERED ? createdAt : null,
-          deliveredAt: sample.status === OrderStatus.DELIVERED ? new Date(createdAt.getTime() + 1000 * 60 * 60 * 6) : null,
-        },
-      });
-    }
-  }
+    },
+  });
 
   await prisma.review.deleteMany({where: {comment: {contains: "[seed]"}}});
 
@@ -766,7 +634,7 @@ async function main() {
     },
   });
 
-  console.log("Seed completed successfully with 17 perfumes, 20 wigs, users, roles, orders, payments, delivery data, and reviews.");
+  console.log("Seed completed successfully with catalog, users, roles, delivery setup, and no demo orders.");
 }
 
 main()
