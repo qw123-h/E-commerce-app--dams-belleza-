@@ -368,6 +368,7 @@
     "sending": "Envoi en cours...",
     "forgotSuccess": "Si le compte existe, un lien de reinitialisation a ete envoye.",
     "forgotError": "Impossible de traiter votre demande pour le moment.",
+    "systemError": "Le systeme de reinitialisation du mot de passe est temporairement indisponible. Contactez le support.",
     "devResetLabel": "Developpement seulement : lien de reinitialisation",
     "devResetOpen": "Ouvrir la page de reinitialisation",
     "backToSignIn": "Retour a la connexion ?",

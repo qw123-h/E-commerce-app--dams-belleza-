@@ -11,6 +11,7 @@ type ForgotPasswordFormProps = {
     sending: string;
     success: string;
     error: string;
+    systemError: string;
     devResetLabel: string;
     devResetOpen: string;
     backToSignIn: string;
@@ -44,7 +45,11 @@ export function ForgotPasswordForm({locale, labels}: ForgotPasswordFormProps) {
       });
 
       if (!response.ok) {
-        setError(labels.error);
+        if (response.status === 503) {
+          setError(labels.systemError);
+        } else {
+          setError(labels.error);
+        }
         setIsSubmitting(false);
         return;
       }
@@ -58,7 +63,8 @@ export function ForgotPasswordForm({locale, labels}: ForgotPasswordFormProps) {
       }
       setIsSubmitting(false);
     } catch {
-      setError(labels.error);
+      setSuccess(labels.success);
+      setError(null);
       setIsSubmitting(false);
     }
   }

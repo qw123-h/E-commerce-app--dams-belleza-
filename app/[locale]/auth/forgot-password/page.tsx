@@ -23,6 +23,7 @@ export default async function ForgotPasswordPage({
           sending: t("sending"),
           success: t("forgotSuccess"),
           error: t("forgotError"),
+          systemError: t("systemError"),
           devResetLabel: t("devResetLabel"),
           devResetOpen: t("devResetOpen"),
           backToSignIn: t("backToSignIn"),

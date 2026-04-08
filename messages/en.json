@@ -368,6 +368,7 @@
     "sending": "Sending...",
     "forgotSuccess": "If the account exists, a reset link has been sent.",
     "forgotError": "Unable to process your request right now.",
+    "systemError": "The password reset system is temporarily unavailable. Please contact support.",
     "devResetLabel": "Development only: reset link",
     "devResetOpen": "Open reset page",
     "backToSignIn": "Back to sign in?",

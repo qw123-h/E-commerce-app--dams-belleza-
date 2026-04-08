@@ -36,6 +36,10 @@ export async function POST(request: Request) {
     await sendPasswordResetEmail({to: email, resetUrl, locale});
   } catch (error) {
     console.error("[forgot-password] SMTP send failed", error);
+    return NextResponse.json(
+      {message: "Password reset is temporarily unavailable due to an email system configuration issue."},
+      {status: 503}
+    );
   }
 
   return NextResponse.json({
