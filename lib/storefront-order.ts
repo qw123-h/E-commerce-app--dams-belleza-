@@ -5,6 +5,7 @@ import {notifyUsersWithPermission} from "@/lib/notifications";
 type GuestOrderInput = {
   productId: string;
   quantity: number;
+  customerId?: string;
   customerName: string;
   customerPhone: string;
   customerEmail?: string;
@@ -111,6 +112,7 @@ export async function createGuestOrder(input: GuestOrderInput) {
   const order = await prisma.order.create({
     data: {
       orderNumber: generateOrderNumber(),
+      customerId: input.customerId,
       deliveryMethod: input.deliveryMethod,
       deliveryZoneId: deliveryZone?.id,
       subtotalAmount,
@@ -184,7 +186,7 @@ export async function createGuestOrder(input: GuestOrderInput) {
     notifyUsersWithPermission("orders.read", {
       type: NotificationType.ORDER,
       title: `New order ${order.orderNumber}`,
-      body: `A new guest order was placed for ${input.customerName}.`,
+      body: `A new order was placed for ${input.customerName}.`,
       metadata: {
         orderNumber: order.orderNumber,
       },

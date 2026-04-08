@@ -1,5 +1,6 @@
 import {DeliveryMethod, PaymentMethod} from "@prisma/client";
 import {NextResponse} from "next/server";
+import {auth} from "@/lib/auth";
 import {createGuestOrder} from "@/lib/storefront-order";
 import {createDocumentToken} from "@/lib/document-token";
 
@@ -24,6 +25,7 @@ function badRequest(message: string) {
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as RequestPayload | null;
+  const session = await auth();
 
   if (!body) {
     return badRequest("Invalid request body");
@@ -86,6 +88,7 @@ export async function POST(request: Request) {
     const order = await createGuestOrder({
       productId: body.productId,
       quantity: Math.max(1, Math.floor(body.quantity)),
+      customerId: session?.user?.id,
       customerName: body.customerName.trim(),
       customerPhone: body.customerPhone.trim(),
       customerEmail: body.customerEmail?.trim() || undefined,

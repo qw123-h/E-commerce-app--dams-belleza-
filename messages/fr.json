@@ -8,6 +8,7 @@
     "nav": {
       "menu": "Menu",
       "products": "Produits",
+      "myAccount": "Mon compte",
       "checkout": "Paiement",
       "connect": "Connexion / Creer un compte",
       "logout": "Se deconnecter",
@@ -382,6 +383,31 @@
     "createAccountLink": "Creer un compte",
     "alreadyHaveAccount": "Vous avez deja un compte ?",
     "signInLink": "Se connecter"
+  },
+  "account": {
+    "title": "Mon compte",
+    "subtitle": "Consultez les details de votre profil et l'historique de vos commandes.",
+    "profileTitle": "Details du profil",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "phone": "Telephone",
+    "whatsapp": "WhatsApp",
+    "notProvided": "Non renseigne",
+    "ordersTitle": "Mes commandes",
+    "orderNumber": "Commande",
+    "status": "Statut",
+    "deliveryMethod": "Livraison",
+    "deliveryZone": "Zone de livraison",
+    "payment": "Paiement",
+    "total": "Total",
+    "items": "Articles",
+    "noOrders": "Aucune commande pour le moment.",
+    "continueShopping": "Continuer vos achats",
+    "stats": {
+      "totalOrders": "Total commandes",
+      "pending": "En attente",
+      "delivered": "Livrees"
+    }
   },
   "errors": {
     "unauthorizedTitle": "Acces refuse",

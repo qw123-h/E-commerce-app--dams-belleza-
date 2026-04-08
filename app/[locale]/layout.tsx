@@ -74,6 +74,11 @@ export default async function LocaleLayout({
                   <p className="text-xs uppercase tracking-[0.2em] text-charcoal-600">Yaounde • Mokolo</p>
                 </div>
                 <nav className="hidden items-center gap-4 text-sm font-semibold text-charcoal-800 md:flex">
+                  {session?.user?.id ? (
+                    <Link href={`/${locale}/account`} className="transition hover:text-charcoal-900">
+                      {nav("myAccount")}
+                    </Link>
+                  ) : null}
                   {!isAdminUser ? (
                     <>
                       <Link href={`/${locale}/products`} className="transition hover:text-charcoal-900">
@@ -129,6 +134,7 @@ export default async function LocaleLayout({
                   </summary>
                   <div className="absolute left-4 right-4 top-full mt-2 rounded-2xl border border-charcoal-900/10 bg-cream-50 p-3 shadow-lg shadow-charcoal-900/10">
                     <nav className="grid gap-2 text-sm font-semibold text-charcoal-800">
+                      {session?.user?.id ? <Link href={`/${locale}/account`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("myAccount")}</Link> : null}
                       {!isAdminUser ? <Link href={`/${locale}/products`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("products")}</Link> : null}
                       {!isAdminUser ? <Link href={`/${locale}/checkout`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("checkout")}</Link> : null}
                       {!isAdminUser ? <Link href={`/${locale}/track-order`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("trackOrder")}</Link> : null}

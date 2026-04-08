@@ -8,6 +8,7 @@
     "nav": {
       "menu": "Menu",
       "products": "Products",
+      "myAccount": "My Account",
       "checkout": "Checkout",
       "connect": "Sign in / Create account",
       "logout": "Log out",
@@ -382,6 +383,31 @@
     "createAccountLink": "Create one",
     "alreadyHaveAccount": "Already have an account?",
     "signInLink": "Sign in"
+  },
+  "account": {
+    "title": "My Account",
+    "subtitle": "View your profile details and your order history.",
+    "profileTitle": "Profile details",
+    "fullName": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "notProvided": "Not provided",
+    "ordersTitle": "My orders",
+    "orderNumber": "Order",
+    "status": "Status",
+    "deliveryMethod": "Delivery",
+    "deliveryZone": "Delivery zone",
+    "payment": "Payment",
+    "total": "Total",
+    "items": "Items",
+    "noOrders": "No orders yet.",
+    "continueShopping": "Continue shopping",
+    "stats": {
+      "totalOrders": "Total orders",
+      "pending": "Pending",
+      "delivered": "Delivered"
+    }
   },
   "errors": {
     "unauthorizedTitle": "Access denied",
