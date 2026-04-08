@@ -35,10 +35,7 @@ export async function POST(request: Request) {
   try {
     await sendPasswordResetEmail({to: email, resetUrl, locale});
   } catch (error) {
-    if (process.env.NODE_ENV !== "development") {
-      const message = error instanceof Error ? error.message : "Failed to send reset email";
-      return NextResponse.json({message}, {status: 500});
-    }
+    console.error("[forgot-password] SMTP send failed", error);
   }
 
   return NextResponse.json({
