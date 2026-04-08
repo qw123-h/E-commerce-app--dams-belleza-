@@ -44,12 +44,13 @@ export function ResetPasswordForm({locale, token, labels}: ResetPasswordFormProp
     }
 
     setIsSubmitting(true);
+    const normalizedPassword = password.trim();
 
     try {
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({token, password}),
+        body: JSON.stringify({token, password: normalizedPassword}),
       });
 
       if (!response.ok) {

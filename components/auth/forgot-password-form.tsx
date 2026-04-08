@@ -31,6 +31,7 @@ export function ForgotPasswordForm({locale, labels}: ForgotPasswordFormProps) {
     setSuccess(null);
     setDevResetUrl(null);
     setIsSubmitting(true);
+    const normalizedEmail = email.trim().toLowerCase();
 
     try {
       const response = await fetch("/api/auth/forgot-password", {
@@ -39,7 +40,7 @@ export function ForgotPasswordForm({locale, labels}: ForgotPasswordFormProps) {
           "Content-Type": "application/json",
           "x-user-locale": locale,
         },
-        body: JSON.stringify({email}),
+        body: JSON.stringify({email: normalizedEmail}),
       });
 
       if (!response.ok) {

@@ -7,8 +7,8 @@ import {prisma} from "@/lib/prisma";
 const registerSchema = z.object({
   firstName: z.string().trim().min(2).max(60),
   lastName: z.string().trim().min(2).max(60),
-  email: z.string().email(),
-  password: z.string().min(8).max(128),
+  email: z.string().trim().toLowerCase().email(),
+  password: z.string().trim().min(8).max(128),
 });
 
 export async function POST(request: Request) {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({message: "Invalid registration payload"}, {status: 400});
   }
 
-  const email = parsed.data.email.toLowerCase();
+  const email = parsed.data.email;
 
   const existing = await prisma.user.findUnique({
     where: {email},

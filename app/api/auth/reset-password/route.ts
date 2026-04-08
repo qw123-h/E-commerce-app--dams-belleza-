@@ -6,7 +6,7 @@ import {consumePasswordResetToken} from "@/lib/password-reset";
 
 const resetPasswordSchema = z.object({
   token: z.string().min(20),
-  password: z.string().min(8).max(128),
+  password: z.string().trim().min(8).max(128),
 });
 
 export async function POST(request: Request) {
