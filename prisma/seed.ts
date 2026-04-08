@@ -397,7 +397,7 @@ async function main() {
         salePrice,
         costPrice,
         categoryId: perfumeCategory.id,
-        isPublished: true,
+        isPublished: false,
         updatedById: admin.id,
       },
       create: {
@@ -411,7 +411,7 @@ async function main() {
         costPrice,
         categoryId: perfumeCategory.id,
         currency: "XAF",
-        isPublished: true,
+        isPublished: false,
         createdById: admin.id,
         updatedById: admin.id,
       },
