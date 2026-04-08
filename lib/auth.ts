@@ -10,8 +10,8 @@ import {resolveUserAccess} from "@/lib/rbac";
 const ACCESS_REFRESH_TTL_SECONDS = 300;
 
 const signInSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  email: z.string().trim().toLowerCase().email(),
+  password: z.string().trim().min(8),
 });
 
 async function authorizeWithCredentials(credentials: Record<string, string> | undefined) {
@@ -21,7 +21,7 @@ async function authorizeWithCredentials(credentials: Record<string, string> | un
     return null;
   }
 
-  const email = parsed.data.email.toLowerCase();
+  const email = parsed.data.email;
   const user = await prisma.user.findUnique({
     where: {email},
     select: {

@@ -32,9 +32,12 @@ export function SignInForm({locale, callbackUrl, labels}: SignInFormProps) {
     setError(null);
     setIsSubmitting(true);
 
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
+
     const response = await signIn("credentials", {
-      email,
-      password,
+      email: normalizedEmail,
+      password: normalizedPassword,
       callbackUrl,
       redirect: false,
     }).catch(() => null);
