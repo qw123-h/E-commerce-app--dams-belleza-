@@ -1,6 +1,8 @@
+import Link from "next/link";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
 import {formatXaf} from "@/lib/format";
+import {auth} from "@/lib/auth";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
 
@@ -51,6 +53,38 @@ export default async function ProductDetailPage({
 
   if (!product) {
     notFound();
+  }
+
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    const callbackUrl = `/${locale}/products/${product.slug}`;
+
+    return (
+      <section className="mx-auto max-w-2xl space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 text-center shadow-xl shadow-charcoal-900/5">
+        <h1 className="font-display text-3xl text-charcoal-900">{t("labels.accountRequiredTitle")}</h1>
+        <p className="text-charcoal-700">{t("labels.accountRequiredMessage")}</p>
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href={`/${locale}/auth/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+            className="rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
+          >
+            {t("labels.createAccountToContinue")}
+          </Link>
+          <Link
+            href={`/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+            className="rounded-full border border-charcoal-900/20 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
+          >
+            {t("labels.signInToContinue")}
+          </Link>
+        </div>
+
+        <Link href={`/${locale}/products`} className="inline-flex text-sm font-semibold text-charcoal-700 underline hover:text-charcoal-900">
+          {t("labels.backToCatalog")}
+        </Link>
+      </section>
+    );
   }
 
   const hasPrice = product.salePrice !== null;

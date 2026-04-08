@@ -282,7 +282,11 @@
       "receipt": "Telecharger recu",
       "whatsapp": "Discuter sur WhatsApp",
       "requestOnWhatsApp": "Commander via WhatsApp",
-      "buyNow": "Acheter"
+      "buyNow": "Acheter",
+      "accountRequiredTitle": "Creez un compte pour voir les details du produit",
+      "accountRequiredMessage": "Vous pouvez parcourir le catalogue librement, mais un compte est requis pour ouvrir les informations completes d'un produit.",
+      "createAccountToContinue": "Creer un compte",
+      "signInToContinue": "Se connecter"
     }
   },
   "checkout": {
@@ -340,7 +344,7 @@
   },
   "auth": {
     "signInTitle": "Connexion",
-    "signInSubtitle": "Utilisez votre compte equipe pour acceder aux modules de gestion proteges.",
+    "signInSubtitle": "Utilisez les identifiants de votre compte pour continuer.",
     "signUpTitle": "Creer un compte",
     "signUpSubtitle": "Inscrivez votre profil pour acceder a votre espace.",
     "firstName": "Prenom",

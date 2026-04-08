@@ -282,7 +282,11 @@
       "receipt": "Download receipt",
       "whatsapp": "Chat on WhatsApp",
       "requestOnWhatsApp": "Request on WhatsApp",
-      "buyNow": "Buy now"
+      "buyNow": "Buy now",
+      "accountRequiredTitle": "Create an account to view product details",
+      "accountRequiredMessage": "You can browse the catalog freely, but you need an account to open full product information.",
+      "createAccountToContinue": "Create account",
+      "signInToContinue": "Sign in"
     }
   },
   "checkout": {
@@ -340,7 +344,7 @@
   },
   "auth": {
     "signInTitle": "Sign in",
-    "signInSubtitle": "Use your staff account to access protected management modules.",
+    "signInSubtitle": "Use your account credentials to continue.",
     "signUpTitle": "Create account",
     "signUpSubtitle": "Register your profile to access your workspace.",
     "firstName": "First name",

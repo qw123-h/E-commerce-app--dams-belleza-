@@ -44,6 +44,8 @@ export function SignUpForm({locale, callbackUrl, labels}: SignUpFormProps) {
     }
 
     setIsSubmitting(true);
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password.trim();
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -52,8 +54,8 @@ export function SignUpForm({locale, callbackUrl, labels}: SignUpFormProps) {
         body: JSON.stringify({
           firstName,
           lastName,
-          email,
-          password,
+          email: normalizedEmail,
+          password: normalizedPassword,
         }),
       });
 
@@ -68,8 +70,8 @@ export function SignUpForm({locale, callbackUrl, labels}: SignUpFormProps) {
       }
 
       const signInResult = await signIn("credentials", {
-        email,
-        password,
+        email: normalizedEmail,
+        password: normalizedPassword,
         callbackUrl,
         redirect: false,
       }).catch(() => null);
