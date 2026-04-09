@@ -21,8 +21,8 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-rose-gold-300/60 bg-cream-50 px-3 py-1 text-xs font-semibold text-charcoal-800">
-      <span>{t("language")}</span>
+    <div className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-rose-gold-300/60 bg-cream-50 px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-charcoal-800">
+      <span className="mr-0.5">{t("language")}</span>
       <button
         type="button"
         onClick={() => handleLocaleChange("fr")}

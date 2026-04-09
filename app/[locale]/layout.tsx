@@ -67,13 +67,14 @@ export default async function LocaleLayout({
       <body className="min-h-screen w-full overflow-x-hidden bg-luxury-gradient text-charcoal-900 antialiased">
         <IntlProvider locale={locale} messages={messages} timeZone="Africa/Douala">
           <div className="flex min-h-screen w-full flex-col">
-            <header className="sticky top-0 z-40 w-full flex items-center justify-between border-b border-charcoal-900/10 bg-cream-50/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 animate-fade-up overflow-x-hidden">
-              <div className="flex items-center gap-8">
-                <div>
-                  <p className="font-display text-xl tracking-wide text-charcoal-900">Dam's belleza</p>
-                  <p className="text-xs uppercase tracking-[0.2em] text-charcoal-600">Yaounde • Mokolo</p>
-                </div>
-                <nav className="hidden items-center gap-4 text-sm font-semibold text-charcoal-800 md:flex">
+            <header className="sticky top-0 z-40 w-full border-b border-charcoal-900/10 bg-cream-50/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8 animate-fade-up overflow-x-hidden">
+              <div className="flex items-center justify-between gap-3">
+                <Link href={`/${locale}`} className="min-w-0">
+                  <p className="font-display text-xl leading-none tracking-wide text-charcoal-900 sm:text-2xl">Dam's belleza</p>
+                  <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-charcoal-600 sm:text-xs sm:tracking-[0.2em]">Yaounde • Mokolo</p>
+                </Link>
+
+                <nav className="hidden items-center gap-4 text-sm font-semibold text-charcoal-800 lg:flex">
                   {session?.user?.id ? (
                     <Link href={`/${locale}/account`} className="transition hover:text-charcoal-900">
                       {nav("myAccount")}
@@ -128,39 +129,55 @@ export default async function LocaleLayout({
                     </Link>
                   ) : null}
                 </nav>
-                <details className="md:hidden">
-                  <summary className="cursor-pointer rounded-full border border-charcoal-900/20 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal-900">
+
+                <div className="hidden lg:flex items-center gap-2">
+                  {session?.user?.id ? (
+                    <LogoutButton label={nav("logout")} locale={locale} />
+                  ) : (
+                    <Link
+                      href={`/${locale}/auth/sign-in`}
+                      className="rounded-full border border-charcoal-900/20 bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 transition hover:bg-cream-100"
+                    >
+                      {nav("connect")}
+                    </Link>
+                  )}
+                  <LanguageSwitcher />
+                </div>
+
+                <details className="relative lg:hidden">
+                  <summary className="list-none cursor-pointer rounded-full border border-charcoal-900/20 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal-900">
                     {nav("menu")}
                   </summary>
-                  <div className="absolute left-4 right-4 top-full mt-2 rounded-2xl border border-charcoal-900/10 bg-cream-50 p-3 shadow-lg shadow-charcoal-900/10">
-                    <nav className="grid gap-2 text-sm font-semibold text-charcoal-800">
-                      {session?.user?.id ? <Link href={`/${locale}/account`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("myAccount")}</Link> : null}
-                      {!isAdminUser ? <Link href={`/${locale}/products`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("products")}</Link> : null}
-                      {!isAdminUser ? <Link href={`/${locale}/checkout`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("checkout")}</Link> : null}
-                      {!isAdminUser ? <Link href={`/${locale}/track-order`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("trackOrder")}</Link> : null}
-                      {canReadProducts ? <Link href={`/${locale}/admin/products`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminProducts")}</Link> : null}
-                      {canReadOrders ? <Link href={`/${locale}/admin/orders`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminOrders")}</Link> : null}
-                      {canReviewPayments ? <Link href={`/${locale}/admin/payments`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminPayments")}</Link> : null}
-                      {canManageDelivery ? <Link href={`/${locale}/admin/delivery`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminDelivery")}</Link> : null}
-                      {canReadReports ? <Link href={`/${locale}/admin/reports`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminReports")}</Link> : null}
-                      {canReadReports ? <Link href={`/${locale}/admin/notifications`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminNotifications")}</Link> : null}
-                      {canManageRoles ? <Link href={`/${locale}/admin/roles`} className="rounded-lg px-2 py-1 transition hover:bg-cream-100">{nav("adminRoles")}</Link> : null}
+                  <div className="absolute right-0 top-full mt-2 w-[min(92vw,22rem)] rounded-2xl border border-charcoal-900/10 bg-cream-50 p-3 shadow-lg shadow-charcoal-900/10">
+                    <nav className="grid gap-1 text-sm font-semibold text-charcoal-800">
+                      {session?.user?.id ? <Link href={`/${locale}/account`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("myAccount")}</Link> : null}
+                      {!isAdminUser ? <Link href={`/${locale}/products`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("products")}</Link> : null}
+                      {!isAdminUser ? <Link href={`/${locale}/checkout`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("checkout")}</Link> : null}
+                      {!isAdminUser ? <Link href={`/${locale}/track-order`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("trackOrder")}</Link> : null}
+                      {canReadProducts ? <Link href={`/${locale}/admin/products`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminProducts")}</Link> : null}
+                      {canReadOrders ? <Link href={`/${locale}/admin/orders`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminOrders")}</Link> : null}
+                      {canReviewPayments ? <Link href={`/${locale}/admin/payments`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminPayments")}</Link> : null}
+                      {canManageDelivery ? <Link href={`/${locale}/admin/delivery`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminDelivery")}</Link> : null}
+                      {canReadReports ? <Link href={`/${locale}/admin/reports`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminReports")}</Link> : null}
+                      {canReadReports ? <Link href={`/${locale}/admin/notifications`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminNotifications")}</Link> : null}
+                      {canManageRoles ? <Link href={`/${locale}/admin/roles`} className="rounded-lg px-2 py-2 transition hover:bg-cream-100">{nav("adminRoles")}</Link> : null}
                     </nav>
+
+                    <div className="mt-3 border-t border-charcoal-900/10 pt-3 space-y-2">
+                      <LanguageSwitcher />
+                      {session?.user?.id ? (
+                        <LogoutButton label={nav("logout")} locale={locale} />
+                      ) : (
+                        <Link
+                          href={`/${locale}/auth/sign-in`}
+                          className="inline-flex rounded-full border border-charcoal-900/20 bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 transition hover:bg-cream-100"
+                        >
+                          {nav("connect")}
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </details>
-              </div>
-              <div className="flex items-center gap-2">
-                {session?.user?.id ? (
-                  <LogoutButton label={nav("logout")} locale={locale} />
-                ) : (
-                  <Link
-                    href={`/${locale}/auth/sign-in`}
-                    className="rounded-full border border-charcoal-900/20 bg-white px-3 py-2 text-xs font-semibold text-charcoal-900 transition hover:bg-cream-100"
-                  >
-                    {nav("connect")}
-                  </Link>
-                )}
-                <LanguageSwitcher />
               </div>
             </header>
             <main className="flex-1 w-full overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8 animate-fade-up-delay-1">{children}</main>
