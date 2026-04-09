@@ -8,6 +8,7 @@ import {routing} from "@/i18n/routing";
 import {auth} from "@/lib/auth";
 import {sessionHasPermission} from "@/lib/rbac";
 import {IntlProvider} from "@/components/providers/intl-provider";
+import {DesktopHeaderNav} from "@/components/storefront/desktop-header-nav";
 import {LanguageSwitcher} from "@/components/storefront/language-switcher";
 import {MobileHeaderMenu} from "@/components/storefront/mobile-header-menu";
 import {WhatsAppFloat} from "@/components/storefront/whatsapp-float";
@@ -76,6 +77,8 @@ export default async function LocaleLayout({
     canManageRoles ? {href: `/${locale}/admin/roles`, label: nav("adminRoles")} : null,
   ].filter((item): item is {href: string; label: string} => item !== null);
 
+  const desktopLinks = mobileLinks;
+
 
   return (
     <html lang={locale} className={`${display.variable} ${body.variable} overflow-x-hidden w-full`}>
@@ -89,61 +92,7 @@ export default async function LocaleLayout({
                   <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-charcoal-600 sm:text-xs sm:tracking-[0.2em]">Yaounde • Mokolo</p>
                 </Link>
 
-                <nav className="hidden items-center gap-5 text-sm font-semibold text-charcoal-800 xl:flex">
-                  {session?.user?.id ? (
-                    <Link href={`/${locale}/account`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("myAccount")}
-                    </Link>
-                  ) : null}
-                  {!isAdminUser ? (
-                    <>
-                      <Link href={`/${locale}/products`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                        {nav("products")}
-                      </Link>
-                      <Link href={`/${locale}/checkout`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                        {nav("checkout")}
-                      </Link>
-                      <Link href={`/${locale}/track-order`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                        {nav("trackOrder")}
-                      </Link>
-                    </>
-                  ) : null}
-                  {canReadProducts ? (
-                    <Link href={`/${locale}/admin/products`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminProducts")}
-                    </Link>
-                  ) : null}
-                  {canReadOrders ? (
-                    <Link href={`/${locale}/admin/orders`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminOrders")}
-                    </Link>
-                  ) : null}
-                  {canReviewPayments ? (
-                    <Link href={`/${locale}/admin/payments`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminPayments")}
-                    </Link>
-                  ) : null}
-                  {canManageDelivery ? (
-                    <Link href={`/${locale}/admin/delivery`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminDelivery")}
-                    </Link>
-                  ) : null}
-                  {canReadReports ? (
-                    <Link href={`/${locale}/admin/reports`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminReports")}
-                    </Link>
-                  ) : null}
-                  {canReadReports ? (
-                    <Link href={`/${locale}/admin/notifications`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminNotifications")}
-                    </Link>
-                  ) : null}
-                  {canManageRoles ? (
-                    <Link href={`/${locale}/admin/roles`} className="transition hover:text-charcoal-900 hover:opacity-80">
-                      {nav("adminRoles")}
-                    </Link>
-                  ) : null}
-                </nav>
+                <DesktopHeaderNav links={desktopLinks} />
 
                 <div className="hidden xl:flex items-center gap-2">
                   {session?.user?.id ? (
