@@ -21,12 +21,13 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full border border-rose-gold-300/60 bg-cream-50 px-2.5 py-1 text-[11px] sm:text-xs font-semibold text-charcoal-800">
-      <span className="mr-0.5">{t("language")}</span>
+    <div className="inline-flex w-full max-w-full items-center justify-between gap-2 rounded-full border border-rose-gold-300/50 bg-white/80 px-3 py-2 text-[11px] sm:text-xs font-semibold text-charcoal-800 shadow-sm shadow-charcoal-900/5 backdrop-blur">
+      <span className="shrink-0 uppercase tracking-[0.12em] text-charcoal-600">{t("language")}</span>
+      <div className="inline-flex flex-1 items-center justify-end gap-1">
       <button
         type="button"
         onClick={() => handleLocaleChange("fr")}
-        className={`rounded-full px-2 py-1 transition ${
+        className={`rounded-full px-2.5 py-1.5 transition ${
           locale === "fr" ? "bg-rose-gold-500 text-cream-50" : "hover:bg-rose-gold-100"
         }`}
       >
@@ -35,12 +36,13 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => handleLocaleChange("en")}
-        className={`rounded-full px-2 py-1 transition ${
+        className={`rounded-full px-2.5 py-1.5 transition ${
           locale === "en" ? "bg-rose-gold-500 text-cream-50" : "hover:bg-rose-gold-100"
         }`}
       >
         {t("english")}
       </button>
+      </div>
     </div>
   );
 }
