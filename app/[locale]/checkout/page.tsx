@@ -7,9 +7,11 @@ import {formatXaf} from "@/lib/format";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
 import {getActiveDeliveryZones} from "@/lib/storefront-order";
+import {extractSizePricing, formatSizePricingSummary} from "@/lib/product-pricing";
 
 type SearchParams = {
   product?: string;
+  variant?: string;
 };
 
 function asSingle(value: string | string[] | undefined): string | undefined {
@@ -25,6 +27,7 @@ export default async function CheckoutPage({
 }) {
   const locale = params?.locale ?? routing.defaultLocale;
   const slug = asSingle(searchParams?.product);
+  const requestedVariant = asSingle(searchParams?.variant)?.trim();
   const t = await getTranslations({locale, namespace: "checkout"});
   const session = await auth();
 
@@ -97,6 +100,7 @@ export default async function CheckoutPage({
       select: {
         id: true,
         name: true,
+        description: true,
         salePrice: true,
         currency: true,
       },
@@ -115,15 +119,46 @@ export default async function CheckoutPage({
       : Promise.resolve(null),
   ]);
 
-  if (!product || !product.salePrice) {
+  if (!product) {
     notFound();
   }
+
+  const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
+  const selectedVariant = (() => {
+    if (requestedVariant) {
+      const [sizePart, pricePart] = requestedVariant.split("|");
+      const parsedPrice = Number(pricePart);
+      const matchedByVariant = sizePricing.find((entry) => entry.size === sizePart && entry.price === parsedPrice);
+      if (matchedByVariant) {
+        return matchedByVariant;
+      }
+    }
+
+    if (sizePricing.length > 0) {
+      return sizePricing[0];
+    }
+
+    if (product.salePrice) {
+      return {size: "", price: Number(product.salePrice)};
+    }
+
+    return null;
+  })();
+
+  if (!selectedVariant) {
+    notFound();
+  }
+
+  const selectedVariantLabel = selectedVariant.size ? `${selectedVariant.size} - ${formatXaf(selectedVariant.price, locale)}` : undefined;
+  const sizeSummary = formatSizePricingSummary(sizePricing, 2);
 
   return (
     <section className="space-y-6">
       <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-7 shadow-lg shadow-charcoal-900/5">
         <h1 className="font-display text-4xl text-charcoal-900">{t("title")}</h1>
         <p className="mt-2 text-charcoal-700">{t("subtitle", {product: product.name})}</p>
+        {sizeSummary ? <p className="mt-2 text-sm text-charcoal-700">{t("sizesTitle")} : {sizeSummary}</p> : null}
+        {selectedVariantLabel ? <p className="mt-2 text-sm font-semibold text-charcoal-800">{selectedVariantLabel}</p> : null}
       </header>
 
       <CheckoutForm
@@ -131,9 +166,10 @@ export default async function CheckoutPage({
         product={{
           id: product.id,
           name: product.name,
-          unitPrice: product.salePrice.toString(),
+          unitPrice: selectedVariant.price.toString(),
           currency: product.currency,
         }}
+        selectedVariantLabel={selectedVariantLabel}
         storeWhatsAppNumber={process.env.WHATSAPP_NUMBER || "237691949858"}
         authenticatedCustomerName={session?.user?.name ?? undefined}
         initialCustomerName={

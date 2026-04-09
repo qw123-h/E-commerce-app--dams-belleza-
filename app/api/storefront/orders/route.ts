@@ -17,6 +17,8 @@ type RequestPayload = {
   paymentMethod?: PaymentMethod;
   paymentReference?: string;
   notes?: string;
+  selectedUnitPrice?: number;
+  selectedVariantLabel?: string;
 };
 
 function badRequest(message: string) {
@@ -96,6 +98,8 @@ export async function POST(request: Request) {
       deliveryZoneId: body.deliveryZoneId?.trim() || undefined,
       paymentMethod: body.paymentMethod,
       paymentReference: body.paymentReference?.trim() || undefined,
+      selectedUnitPrice: typeof body.selectedUnitPrice === "number" ? body.selectedUnitPrice : undefined,
+      selectedVariantLabel: body.selectedVariantLabel?.trim() || undefined,
       notes: combinedNotes,
     });
 

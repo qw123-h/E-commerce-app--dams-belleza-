@@ -78,7 +78,6 @@ export default async function ProductsPage({
           wigs: t("filters.wigs"),
           perfumes: t("filters.perfumes"),
           fixed: t("filters.fixed"),
-          negotiable: t("filters.negotiable"),
           newest: t("filters.newest"),
           priceLowToHigh: t("filters.priceLowToHigh"),
           priceHighToLow: t("filters.priceHighToLow"),
@@ -113,7 +112,6 @@ export default async function ProductsPage({
                 quantityOnHand: product.stock?.quantityOnHand ?? null,
               }}
               labels={{
-                negotiable: t("labels.negotiable"),
                 outOfStock: t("labels.outOfStock"),
                 inStock: t("labels.inStock"),
                 category: t("labels.category"),

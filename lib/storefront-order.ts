@@ -1,6 +1,7 @@
 import {DeliveryMethod, NotificationType, PaymentMethod, Prisma} from "@prisma/client";
 import {prisma} from "@/lib/prisma";
 import {notifyUsersWithPermission} from "@/lib/notifications";
+import {extractSizePricing} from "@/lib/product-pricing";
 
 type GuestOrderInput = {
   productId: string;
@@ -13,6 +14,8 @@ type GuestOrderInput = {
   deliveryZoneId?: string;
   paymentMethod: PaymentMethod;
   paymentReference?: string;
+  selectedUnitPrice?: number;
+  selectedVariantLabel?: string;
   notes?: string;
 };
 
@@ -56,6 +59,7 @@ export async function createGuestOrder(input: GuestOrderInput) {
     select: {
       id: true,
       name: true,
+      description: true,
       salePrice: true,
       priceMode: true,
       currency: true,
@@ -71,8 +75,20 @@ export async function createGuestOrder(input: GuestOrderInput) {
     throw new Error("Product not available");
   }
 
-  if (!product.salePrice) {
-    throw new Error("Selected product is negotiable only");
+  const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
+  const allowedPrices = new Set(sizePricing.map((entry) => entry.price));
+  const selectedUnitPrice = input.selectedUnitPrice ?? (product.salePrice ? Number(product.salePrice) : null);
+
+  if (sizePricing.length > 1 && selectedUnitPrice === null) {
+    throw new Error("Please select a product size before placing the order");
+  }
+
+  if (selectedUnitPrice === null) {
+    throw new Error("Selected product has no price configured");
+  }
+
+  if (sizePricing.length > 0 && !allowedPrices.has(selectedUnitPrice)) {
+    throw new Error("Selected size price is invalid");
   }
 
   if (input.quantity < 1) {
@@ -103,10 +119,11 @@ export async function createGuestOrder(input: GuestOrderInput) {
     throw new Error("Delivery zone is required for delivery");
   }
 
-  const unitPrice = new Prisma.Decimal(product.salePrice);
+  const unitPrice = new Prisma.Decimal(selectedUnitPrice);
   const subtotalAmount = unitPrice.mul(input.quantity);
   const deliveryAmount = deliveryZone?.deliveryPrice ?? new Prisma.Decimal(0);
   const totalAmount = subtotalAmount.add(deliveryAmount);
+  const selectedVariantLabel = input.selectedVariantLabel?.trim() || undefined;
 
   const invoiceNumber = generateInvoiceNumber();
   const order = await prisma.order.create({
@@ -122,6 +139,7 @@ export async function createGuestOrder(input: GuestOrderInput) {
         `Guest: ${input.customerName}`,
         `Phone: ${input.customerPhone}`,
         input.customerEmail ? `Email: ${input.customerEmail}` : null,
+        selectedVariantLabel ? `Variant: ${selectedVariantLabel}` : null,
         input.notes ? `Notes: ${input.notes}` : null,
       ]
         .filter(Boolean)

@@ -161,13 +161,10 @@ async function importRows(filePath: string) {
 
     const explicitSalePrice = parseNumber(row.sale_price);
     const inferredMinPrice = sizePricing.length > 0 ? Math.min(...sizePricing.map((entry) => entry.price)) : null;
-    const salePrice = explicitSalePrice ?? (sizePricing.length === 1 ? inferredMinPrice : null);
+    const salePrice = explicitSalePrice ?? inferredMinPrice;
     const costPrice = parseNumber(row.cost_price) ?? inferredMinPrice;
 
-    let priceMode = normalizePriceMode(row.price_mode, productType);
-    if (sizePricing.length > 1 && !explicitSalePrice) {
-      priceMode = PriceMode.NEGOTIABLE;
-    }
+    const priceMode = PriceMode.FIXED;
 
     const description = buildDescription(baseDescription || name, sizePricing);
     const currency = String(row.currency || "XAF").trim() || "XAF";

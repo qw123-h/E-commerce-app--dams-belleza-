@@ -5,6 +5,7 @@ import {formatXaf} from "@/lib/format";
 import {auth} from "@/lib/auth";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
+import {extractSizePricing, formatSizePricingSummary} from "@/lib/product-pricing";
 
 export default async function ProductDetailPage({
   params,
@@ -87,7 +88,12 @@ export default async function ProductDetailPage({
     );
   }
 
-  const hasPrice = product.salePrice !== null;
+  const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
+  const hasPrice = product.salePrice !== null || sizePricing.length > 0;
+  const defaultVariant = sizePricing[0] ?? (product.salePrice ? {size: "", price: Number(product.salePrice)} : null);
+  const checkoutHref = defaultVariant
+    ? `/${locale}/checkout?product=${product.slug}${defaultVariant.size ? `&variant=${encodeURIComponent(`${defaultVariant.size}|${defaultVariant.price}`)}` : ""}`
+    : `/${locale}/checkout?product=${product.slug}`;
 
   return (
     <section className="space-y-6">
@@ -135,8 +141,21 @@ export default async function ProductDetailPage({
 
           <p className="text-charcoal-700">{product.description ?? t("labels.noDescription")}</p>
 
+          {sizePricing.length > 0 ? (
+            <div className="rounded-2xl border border-charcoal-900/10 bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-600">{t("labels.sizesTitle")}</p>
+              <p className="mt-2 text-sm text-charcoal-700">{formatSizePricingSummary(sizePricing, sizePricing.length)}</p>
+            </div>
+          ) : null}
+
           <p className="text-2xl font-semibold text-charcoal-900">
-            {hasPrice ? formatXaf(Number(product.salePrice), locale) : t("labels.negotiable")}
+            {hasPrice
+              ? product.salePrice !== null
+                ? formatXaf(Number(product.salePrice), locale)
+                : defaultVariant
+                  ? formatXaf(defaultVariant.price, locale)
+                  : t("labels.negotiable")
+              : t("labels.negotiable")}
           </p>
 
           <p className="text-sm text-charcoal-700">
@@ -148,12 +167,14 @@ export default async function ProductDetailPage({
           {hasPrice ? (
             <div className="space-y-2">
               <a
-                href={`/${locale}/checkout?product=${product.slug}`}
+                href={checkoutHref}
                 className="inline-flex rounded-full border border-charcoal-900/20 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
               >
                 {t("labels.buyNow")}
               </a>
-              <p className="text-xs text-charcoal-700">{t("labels.buyNowHint")}</p>
+              <p className="text-xs text-charcoal-700">
+                {sizePricing.length > 0 ? t("labels.buyNowHintSized") : t("labels.buyNowHint")}
+              </p>
             </div>
           ) : null}
         </div>

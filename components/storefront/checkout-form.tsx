@@ -61,6 +61,7 @@ type CheckoutFormProps = {
     unitPrice: string;
     currency: string;
   };
+  selectedVariantLabel?: string;
   storeWhatsAppNumber: string;
   authenticatedCustomerName?: string;
   initialCustomerName?: string;
@@ -117,6 +118,8 @@ function buildWhatsAppMessage(input: {
   productName: string;
   quantity: number;
   deliveryMethod: "PICKUP" | "DELIVERY";
+  variantLabel?: string;
+  unitPrice: number;
 }) {
   const deliveryText =
     input.deliveryMethod === "DELIVERY"
@@ -132,23 +135,30 @@ function buildWhatsAppMessage(input: {
       "Bonjour equipe Dam's belleza,",
       `Je m'appelle ${input.customerName}.`,
       `Je viens de passer la commande ${input.orderNumber} dans l'application pour ${input.quantity} x ${input.productName}.`,
+      input.variantLabel ? `Variante choisie: ${input.variantLabel} (${input.unitPrice.toLocaleString("fr-FR")} XAF).` : null,
       `Mode souhaite: ${deliveryText}.`,
       "Merci de confirmer les prochaines etapes.",
-    ].join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
   }
 
   return [
     "Hello Dam's belleza team,",
     `My name is ${input.customerName}.`,
     `I have just placed order ${input.orderNumber} in the app for ${input.quantity} x ${input.productName}.`,
+    input.variantLabel ? `Selected variant: ${input.variantLabel} (${input.unitPrice.toLocaleString("en-US")} XAF).` : null,
     `Preferred fulfillment: ${deliveryText}.`,
     "Please confirm the next steps. Thank you.",
-  ].join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 export function CheckoutForm({
   locale,
   product,
+  selectedVariantLabel,
   storeWhatsAppNumber,
   authenticatedCustomerName,
   initialCustomerName,
@@ -234,6 +244,8 @@ export function CheckoutForm({
           deliveryLongitude: deliveryMethod === "DELIVERY" ? deliveryLongitude : undefined,
           paymentMethod,
           paymentReference: paymentReference || undefined,
+          selectedUnitPrice: Number(product.unitPrice),
+          selectedVariantLabel: selectedVariantLabel || undefined,
           notes: notes || undefined,
         }),
       });
@@ -271,6 +283,8 @@ export function CheckoutForm({
           productName: product.name,
           quantity,
           deliveryMethod,
+          variantLabel: selectedVariantLabel,
+          unitPrice: Number(product.unitPrice),
         });
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
         successUrl.searchParams.set("wa", whatsappUrl);

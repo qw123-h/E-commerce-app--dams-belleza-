@@ -6,6 +6,7 @@ import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
 import {auth} from "@/lib/auth";
 import {sessionHasPermission} from "@/lib/rbac";
+import {extractSizePricing, formatSizePricingSummary} from "@/lib/product-pricing";
 
 export default async function HomePage({
   params,
@@ -39,6 +40,7 @@ export default async function HomePage({
       name: true,
       slug: true,
       productType: true,
+        description: true,
       salePrice: true,
       images: {
         where: {
@@ -114,6 +116,7 @@ export default async function HomePage({
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {featuredProducts.map((product, index) => {
             const badge = promoBadges[index % promoBadges.length];
+            const sizeSummary = formatSizePricingSummary(extractSizePricing(`${product.name}\n${product.description ?? ""}`), 2);
             return (
               <Link key={product.id} href={`/${locale}/products/${product.slug}`} className="group rounded-2xl border border-charcoal-900/10 bg-white p-3 transition hover:border-charcoal-900/25 hover:shadow-lg">
                 <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-rose-gold-200/35 via-cream-100 to-charcoal-300/20">
@@ -136,8 +139,9 @@ export default async function HomePage({
                 <div className="mt-3 space-y-1">
                   <p className="line-clamp-1 font-semibold text-charcoal-900">{product.name}</p>
                   <p className="text-sm text-charcoal-700">
-                    {product.salePrice ? formatXaf(Number(product.salePrice), locale) : t("priceOnRequest")}
+                    {product.salePrice ? formatXaf(Number(product.salePrice), locale) : sizeSummary || t("priceOnRequest")}
                   </p>
+                  {sizeSummary ? <p className="text-xs text-charcoal-600">{sizeSummary}</p> : null}
                   <p className="text-xs text-charcoal-600">
                     {(product.stock?.quantityOnHand ?? 0) > 0
                       ? t("stockNow", {count: product.stock?.quantityOnHand ?? 0})

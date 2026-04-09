@@ -85,9 +85,9 @@ function buildRow(fileName: string) {
   }
 
   const type = inferType(normalized);
-  const salePrice = sizePricing.length === 1 ? String(sizePricing[0].price) : "";
+  const salePrice = sizePricing.length > 0 ? String(Math.min(...sizePricing.map((entry) => entry.price))) : "";
   const costPrice = sizePricing.length > 0 ? String(Math.min(...sizePricing.map((entry) => entry.price))) : "";
-  const priceMode = sizePricing.length > 1 ? "NEGOTIABLE" : type === "perfume" ? "FIXED" : "NEGOTIABLE";
+  const priceMode = "FIXED";
   const sizesPricesText = sizePricing.map((entry) => `${entry.size} ${entry.price}`).join("; ");
   const sku = stableSkuFromFileName(fileName, type);
 

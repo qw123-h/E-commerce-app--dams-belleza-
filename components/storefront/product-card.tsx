@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type {PriceMode, ProductType} from "@prisma/client";
 import {formatXaf} from "@/lib/format";
+import {extractSizePricing, formatSizePricingSummary} from "@/lib/product-pricing";
 
 type ProductCardProps = {
   locale: string;
@@ -17,7 +18,6 @@ type ProductCardProps = {
     quantityOnHand: number | null;
   };
   labels: {
-    negotiable: string;
     outOfStock: string;
     inStock: string;
     category: string;
@@ -28,6 +28,7 @@ type ProductCardProps = {
 export function ProductCard({locale, product, labels}: ProductCardProps) {
   const hasPrice = product.salePrice !== null;
   const hasStock = (product.quantityOnHand ?? 0) > 0;
+  const sizeSummary = formatSizePricingSummary(extractSizePricing(product.description), 2);
 
   return (
     <article className="group overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 shadow-lg shadow-charcoal-900/5 transition hover:-translate-y-0.5 hover:shadow-xl animate-fade-up-delay-2 alive-hover">
@@ -58,8 +59,9 @@ export function ProductCard({locale, product, labels}: ProductCardProps) {
         <div className="flex items-end justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-charcoal-900">
-              {hasPrice ? formatXaf(Number(product.salePrice), locale) : labels.negotiable}
+              {hasPrice ? formatXaf(Number(product.salePrice), locale) : sizeSummary}
             </p>
+            {sizeSummary ? <p className="mt-1 text-xs text-charcoal-600">{sizeSummary}</p> : null}
             <p className="mt-1 text-xs text-charcoal-600">
               {hasStock ? `${labels.inStock}: ${product.quantityOnHand ?? 0}` : labels.outOfStock}
             </p>
