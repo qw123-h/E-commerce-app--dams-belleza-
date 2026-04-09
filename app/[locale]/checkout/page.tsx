@@ -124,6 +124,7 @@ export default async function CheckoutPage({
   }
 
   const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
+  const requiresExplicitVariantChoice = sizePricing.length > 1;
   const selectedVariant = (() => {
     if (requestedVariant) {
       const [sizePart, pricePart] = requestedVariant.split("|");
@@ -134,7 +135,11 @@ export default async function CheckoutPage({
       }
     }
 
-    if (sizePricing.length > 0) {
+    if (requiresExplicitVariantChoice) {
+      return null;
+    }
+
+    if (sizePricing.length === 1) {
       return sizePricing[0];
     }
 
@@ -144,6 +149,45 @@ export default async function CheckoutPage({
 
     return null;
   })();
+
+  if (requiresExplicitVariantChoice && !selectedVariant) {
+    const hasInvalidVariantRequest = Boolean(requestedVariant);
+
+    return (
+      <section className="space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-xl shadow-charcoal-900/5">
+        <header className="space-y-2">
+          <h1 className="font-display text-2xl sm:text-3xl text-charcoal-900">{t("chooseVariantTitle", {product: product.name})}</h1>
+          <p className="text-sm text-charcoal-700">{t("chooseVariantSubtitle")}</p>
+          {hasInvalidVariantRequest ? <p className="text-sm font-semibold text-red-700">{t("invalidVariantMessage")}</p> : null}
+        </header>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {sizePricing.map((variant) => {
+            const variantLabel = variant.size || t("singlePriceLabel");
+            const variantHref = `/${locale}/checkout?product=${slug}&variant=${encodeURIComponent(`${variant.size}|${variant.price}`)}`;
+
+            return (
+              <Link
+                key={`${variant.size}-${variant.price}`}
+                href={variantHref}
+                className="rounded-2xl border border-charcoal-900/15 bg-white p-4 transition hover:border-charcoal-900/40 hover:shadow-md"
+              >
+                <p className="text-xs uppercase tracking-[0.12em] text-charcoal-600">{variantLabel}</p>
+                <p className="mt-1 text-lg font-semibold text-charcoal-900">{formatXaf(variant.price, locale)}</p>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal-700">{t("selectVariantAction")}</p>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div>
+          <Link href={`/${locale}/products/${slug}`} className="inline-flex text-sm font-semibold text-charcoal-700 underline hover:text-charcoal-900">
+            {t("backToCatalog")}
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
   if (!selectedVariant) {
     notFound();

@@ -91,9 +91,11 @@ export default async function ProductDetailPage({
   const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
   const hasPrice = product.salePrice !== null || sizePricing.length > 0;
   const defaultVariant = sizePricing[0] ?? (product.salePrice ? {size: "", price: Number(product.salePrice)} : null);
-  const checkoutHref = defaultVariant
-    ? `/${locale}/checkout?product=${product.slug}${defaultVariant.size ? `&variant=${encodeURIComponent(`${defaultVariant.size}|${defaultVariant.price}`)}` : ""}`
-    : `/${locale}/checkout?product=${product.slug}`;
+  const checkoutHref = sizePricing.length > 1
+    ? `/${locale}/checkout?product=${product.slug}`
+    : defaultVariant
+      ? `/${locale}/checkout?product=${product.slug}${defaultVariant.size ? `&variant=${encodeURIComponent(`${defaultVariant.size}|${defaultVariant.price}`)}` : ""}`
+      : `/${locale}/checkout?product=${product.slug}`;
 
   return (
     <section className="w-full overflow-x-hidden space-y-6">
