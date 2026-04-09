@@ -145,22 +145,16 @@ export default async function ProductDetailPage({
               : t("labels.outOfStock")}
           </p>
 
-          <a
-            href="https://wa.me/237691949858"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
-          >
-            {t("labels.requestOnWhatsApp")}
-          </a>
-
           {hasPrice ? (
-            <a
-              href={`/${locale}/checkout?product=${product.slug}`}
-              className="ml-3 inline-flex rounded-full border border-charcoal-900/20 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
-            >
-              {t("labels.buyNow")}
-            </a>
+            <div className="space-y-2">
+              <a
+                href={`/${locale}/checkout?product=${product.slug}`}
+                className="inline-flex rounded-full border border-charcoal-900/20 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
+              >
+                {t("labels.buyNow")}
+              </a>
+              <p className="text-xs text-charcoal-700">{t("labels.buyNowHint")}</p>
+            </div>
           ) : null}
         </div>
       </article>

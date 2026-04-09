@@ -283,7 +283,8 @@
       "receipt": "Telecharger recu",
       "whatsapp": "Discuter sur WhatsApp",
       "requestOnWhatsApp": "Commander via WhatsApp",
-      "buyNow": "Acheter",
+      "buyNow": "Passer votre commande",
+      "buyNowHint": "Apres validation de votre commande, WhatsApp s'ouvre automatiquement avec un message professionnel deja rempli.",
       "accountRequiredTitle": "Creez un compte pour voir les details du produit",
       "accountRequiredMessage": "Vous pouvez parcourir le catalogue librement, mais un compte est requis pour ouvrir les informations completes d'un produit.",
       "createAccountToContinue": "Creer un compte",
@@ -339,6 +340,8 @@
       "message": "Votre commande est enregistree. Nous vous contacterons rapidement.",
       "orderNumber": "Commande",
       "invoice": "Telecharger facture",
+      "whatsapp": "Ouvrir la confirmation WhatsApp",
+      "whatsappHint": "Si WhatsApp ne s'est pas ouvert automatiquement, continuez avec ce bouton.",
       "home": "Accueil",
       "products": "Continuer vos achats"
     }

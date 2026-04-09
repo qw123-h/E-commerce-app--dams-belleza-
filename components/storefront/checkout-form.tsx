@@ -61,6 +61,11 @@ type CheckoutFormProps = {
     unitPrice: string;
     currency: string;
   };
+  storeWhatsAppNumber: string;
+  authenticatedCustomerName?: string;
+  initialCustomerName?: string;
+  initialCustomerPhone?: string;
+  initialCustomerEmail?: string;
   deliveryZones: DeliveryZone[];
   labels: {
     yourName: string;
@@ -101,11 +106,61 @@ type CheckoutFormProps = {
   };
 };
 
-export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutFormProps) {
+function normalizeWhatsAppNumber(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function buildWhatsAppMessage(input: {
+  locale: string;
+  customerName: string;
+  orderNumber: string;
+  productName: string;
+  quantity: number;
+  deliveryMethod: "PICKUP" | "DELIVERY";
+}) {
+  const deliveryText =
+    input.deliveryMethod === "DELIVERY"
+      ? input.locale === "fr"
+        ? "livraison a domicile"
+        : "home delivery"
+      : input.locale === "fr"
+        ? "retrait en boutique"
+        : "store pickup";
+
+  if (input.locale === "fr") {
+    return [
+      "Bonjour equipe Dam's belleza,",
+      `Je m'appelle ${input.customerName}.`,
+      `Je viens de passer la commande ${input.orderNumber} dans l'application pour ${input.quantity} x ${input.productName}.`,
+      `Mode souhaite: ${deliveryText}.`,
+      "Merci de confirmer les prochaines etapes.",
+    ].join("\n");
+  }
+
+  return [
+    "Hello Dam's belleza team,",
+    `My name is ${input.customerName}.`,
+    `I have just placed order ${input.orderNumber} in the app for ${input.quantity} x ${input.productName}.`,
+    `Preferred fulfillment: ${deliveryText}.`,
+    "Please confirm the next steps. Thank you.",
+  ].join("\n");
+}
+
+export function CheckoutForm({
+  locale,
+  product,
+  storeWhatsAppNumber,
+  authenticatedCustomerName,
+  initialCustomerName,
+  initialCustomerPhone,
+  initialCustomerEmail,
+  deliveryZones,
+  labels,
+}: CheckoutFormProps) {
   const router = useRouter();
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerName, setCustomerName] = useState(initialCustomerName ?? "");
+  const [customerPhone, setCustomerPhone] = useState(initialCustomerPhone ?? "");
+  const [customerEmail, setCustomerEmail] = useState(initialCustomerEmail ?? "");
   const [quantity, setQuantity] = useState(1);
   const [deliveryMethod, setDeliveryMethod] = useState<"PICKUP" | "DELIVERY">("PICKUP");
   const [paymentMethod, setPaymentMethod] = useState<"ORANGE_MONEY" | "MTN_MOMO" | "BANK_TRANSFER">("ORANGE_MONEY");
@@ -204,6 +259,26 @@ export function CheckoutForm({locale, product, deliveryZones, labels}: CheckoutF
 
       if (payload.invoiceToken) {
         successUrl.searchParams.set("token", payload.invoiceToken);
+      }
+
+      const whatsappNumber = normalizeWhatsAppNumber(storeWhatsAppNumber);
+      if (whatsappNumber) {
+        const resolvedCustomerName = (authenticatedCustomerName || customerName || "Customer").trim();
+        const whatsappMessage = buildWhatsAppMessage({
+          locale,
+          customerName: resolvedCustomerName,
+          orderNumber: payload.orderNumber,
+          productName: product.name,
+          quantity,
+          deliveryMethod,
+        });
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+        successUrl.searchParams.set("wa", whatsappUrl);
+
+        const popup = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+        if (popup) {
+          popup.opener = null;
+        }
       }
 
       router.push(`${successUrl.pathname}${successUrl.search}`);

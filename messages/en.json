@@ -283,7 +283,8 @@
       "receipt": "Download receipt",
       "whatsapp": "Chat on WhatsApp",
       "requestOnWhatsApp": "Request on WhatsApp",
-      "buyNow": "Buy now",
+      "buyNow": "Place your order",
+      "buyNowHint": "After placing your order, WhatsApp opens automatically with a professional prefilled confirmation message.",
       "accountRequiredTitle": "Create an account to view product details",
       "accountRequiredMessage": "You can browse the catalog freely, but you need an account to open full product information.",
       "createAccountToContinue": "Create account",
@@ -339,6 +340,8 @@
       "message": "Your order has been received. We will contact you shortly.",
       "orderNumber": "Order",
       "invoice": "Download invoice",
+      "whatsapp": "Open WhatsApp confirmation",
+      "whatsappHint": "If WhatsApp did not open automatically, continue with this button.",
       "home": "Back home",
       "products": "Continue shopping"
     }

@@ -92,14 +92,6 @@ export default async function HomePage({
             >
               {t("ctaConnect")}
             </Link>
-            <Link
-              href="https://wa.me/237691949858"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full border border-charcoal-900/30 bg-cream-100 px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-rose-gold-100"
-            >
-              {t("ctaWhatsApp")}
-            </Link>
           </div>
           <div className="flex flex-wrap gap-2 pt-2">
             {promoBadges.map((badge) => (

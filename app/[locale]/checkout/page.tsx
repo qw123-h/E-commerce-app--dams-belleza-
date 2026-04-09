@@ -2,6 +2,7 @@ import Link from "next/link";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
 import {CheckoutForm} from "@/components/storefront/checkout-form";
+import {auth} from "@/lib/auth";
 import {formatXaf} from "@/lib/format";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
@@ -25,6 +26,7 @@ export default async function CheckoutPage({
   const locale = params?.locale ?? routing.defaultLocale;
   const slug = asSingle(searchParams?.product);
   const t = await getTranslations({locale, namespace: "checkout"});
+  const session = await auth();
 
   if (!slug) {
     const quickPickProducts = await prisma.product.findMany({
@@ -85,7 +87,7 @@ export default async function CheckoutPage({
     );
   }
 
-  const [product, deliveryZones] = await Promise.all([
+  const [product, deliveryZones, profile] = await Promise.all([
     prisma.product.findFirst({
       where: {
         slug,
@@ -100,6 +102,17 @@ export default async function CheckoutPage({
       },
     }),
     getActiveDeliveryZones(),
+    session?.user?.id
+      ? prisma.user.findUnique({
+          where: {id: session.user.id},
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+          },
+        })
+      : Promise.resolve(null),
   ]);
 
   if (!product || !product.salePrice) {
@@ -121,6 +134,13 @@ export default async function CheckoutPage({
           unitPrice: product.salePrice.toString(),
           currency: product.currency,
         }}
+        storeWhatsAppNumber={process.env.WHATSAPP_NUMBER || "237691949858"}
+        authenticatedCustomerName={session?.user?.name ?? undefined}
+        initialCustomerName={
+          profile ? `${profile.firstName} ${profile.lastName}`.trim() : session?.user?.name ?? ""
+        }
+        initialCustomerPhone={profile?.phone ?? ""}
+        initialCustomerEmail={profile?.email ?? session?.user?.email ?? ""}
         deliveryZones={deliveryZones.map((zone) => ({
           id: zone.id,
           city: zone.city,
