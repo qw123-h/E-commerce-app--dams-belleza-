@@ -100,12 +100,12 @@ export default async function TrackOrderPage({
 
   return (
     <section className="space-y-6">
-      <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-7 shadow-lg shadow-charcoal-900/5">
-        <h1 className="font-display text-4xl text-charcoal-900">{t("title")}</h1>
-        <p className="mt-2 text-charcoal-700">{t("subtitle")}</p>
+      <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-4 py-5 sm:px-6 sm:py-7 shadow-lg shadow-charcoal-900/5">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-charcoal-900">{t("title")}</h1>
+        <p className="mt-2 text-sm sm:text-base text-charcoal-700">{t("subtitle")}</p>
       </header>
 
-      <form className="grid gap-3 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-5 shadow-lg shadow-charcoal-900/5 md:grid-cols-3">
+      <form className="grid grid-cols-1 gap-3 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-5 shadow-lg shadow-charcoal-900/5 sm:grid-cols-3">
         <input
           name="order"
           defaultValue={orderNumber}
@@ -125,11 +125,11 @@ export default async function TrackOrderPage({
 
       {lookupByOrder ? (
         order && matchesPhone ? (
-          <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
+          <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-lg shadow-charcoal-900/5">
             <p className="text-xs uppercase tracking-[0.12em] text-charcoal-600">{t("orderNumber")}</p>
-            <p className="mt-1 text-xl font-semibold text-charcoal-900">{order.orderNumber}</p>
+            <p className="mt-1 text-lg sm:text-xl font-semibold text-charcoal-900">{order.orderNumber}</p>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.12em] text-charcoal-600">{t("orderStatus")}</p>
                 <p className="mt-1 text-sm font-semibold text-charcoal-900">{order.status}</p>
@@ -166,9 +166,9 @@ export default async function TrackOrderPage({
         )
       ) : lookupByPhoneOnly ? (
         recentOrdersByPhone.length > 0 ? (
-          <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
+            <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-lg shadow-charcoal-900/5">
             <p className="text-sm font-semibold text-charcoal-900">{t("foundByPhoneTitle")}</p>
-            <p className="mt-1 text-sm text-charcoal-700">{t("foundByPhoneSubtitle")}</p>
+            <p className="mt-1 text-xs sm:text-sm text-charcoal-700">{t("foundByPhoneSubtitle")}</p>
 
             <div className="mt-4 space-y-3">
               {recentOrdersByPhone.map((candidate) => (

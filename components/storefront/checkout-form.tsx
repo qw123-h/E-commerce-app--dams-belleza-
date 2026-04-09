@@ -485,8 +485,8 @@ export function CheckoutForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-xl shadow-charcoal-900/5">
-      <div className="grid gap-4 md:grid-cols-2">
+    <form onSubmit={onSubmit} className="space-y-4 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-xl shadow-charcoal-900/5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="text-sm text-charcoal-700">
           <span className="mb-1 block font-semibold">{labels.yourName}</span>
           <input
@@ -557,13 +557,13 @@ export function CheckoutForm({
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm text-charcoal-700">
-          <span className="mb-1 block font-semibold">{labels.paymentMethod}</span>
+          <span className="mb-1 block font-semibold text-xs sm:text-sm">{labels.paymentMethod}</span>
           <select
             value={paymentMethod}
             onChange={(event) =>
               setPaymentMethod(event.target.value as "ORANGE_MONEY" | "MTN_MOMO" | "BANK_TRANSFER")
             }
-            className="w-full rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-charcoal-900 outline-none ring-rose-gold-300/70 transition focus:ring"
+            className="w-full rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-xs sm:text-sm text-charcoal-900 outline-none ring-rose-gold-300/70 transition focus:ring"
           >
             <option value="ORANGE_MONEY">{labels.orangeMoney}</option>
             <option value="MTN_MOMO">{labels.mtnMomo}</option>
@@ -571,8 +571,8 @@ export function CheckoutForm({
           </select>
         </label>
 
-        <label className="text-sm text-charcoal-700">
-          <span className="mb-1 block font-semibold">{labels.paymentReference}</span>
+        <label className="text-xs sm:text-sm text-charcoal-700">
+          <span className="mb-1 block font-semibold text-xs sm:text-sm">{labels.paymentReference}</span>
           <input
             value={paymentReference}
             onChange={(event) => setPaymentReference(event.target.value)}
@@ -583,8 +583,8 @@ export function CheckoutForm({
 
       {deliveryMethod === "DELIVERY" ? (
         <div className="space-y-4">
-          <label className="text-sm text-charcoal-700">
-            <span className="mb-1 block font-semibold">{labels.deliveryZone}</span>
+          <label className="text-xs sm:text-sm text-charcoal-700">
+            <span className="mb-1 block font-semibold text-xs sm:text-sm">{labels.deliveryZone}</span>
             <select
               required
               value={deliveryZoneId}
@@ -617,17 +617,17 @@ export function CheckoutForm({
             </p>
           </label>
 
-          <section className="space-y-2 rounded-xl border border-charcoal-900/10 bg-white p-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+          <section className="space-y-2 rounded-xl border border-charcoal-900/10 bg-white p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-2">
               <div>
-                <p className="text-sm font-semibold text-charcoal-800">{labels.deliveryLocationTitle}</p>
+                <p className="text-xs sm:text-sm font-semibold text-charcoal-800">{labels.deliveryLocationTitle}</p>
                 <p className="text-xs text-charcoal-600">{labels.deliveryLocationHelp}</p>
               </div>
               <button
                 type="button"
                 onClick={handleUseCurrentLocation}
                 disabled={isLocating}
-                className="rounded-lg border border-charcoal-900/20 px-3 py-1.5 text-xs font-semibold text-charcoal-900 disabled:opacity-60"
+                className="rounded-lg border border-charcoal-900/20 px-2 sm:px-3 py-1.5 text-xs font-semibold text-charcoal-900 disabled:opacity-60"
               >
                 {isLocating ? labels.detectingLocation : labels.useCurrentLocation}
               </button>
@@ -641,27 +641,27 @@ export function CheckoutForm({
               onSelectLocation={updateSelectedLocation}
             />
 
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <label className="text-xs text-charcoal-700">
-                <span className="mb-1 block font-semibold">{labels.latitude}</span>
+                <span className="mb-1 block font-semibold text-xs">{labels.latitude}</span>
                 <input
                   type="number"
                   step="0.000001"
                   value={deliveryLatitude ?? ""}
                   onChange={(event) => updateManualCoordinate("lat", event.target.value)}
                   onBlur={applyManualCoordinates}
-                  className="w-full rounded-lg border border-charcoal-900/20 px-2 py-1.5 text-charcoal-900"
+                  className="w-full rounded-lg border border-charcoal-900/20 px-2 py-1.5 text-xs text-charcoal-900"
                 />
               </label>
               <label className="text-xs text-charcoal-700">
-                <span className="mb-1 block font-semibold">{labels.longitude}</span>
+                <span className="mb-1 block font-semibold text-xs">{labels.longitude}</span>
                 <input
                   type="number"
                   step="0.000001"
                   value={deliveryLongitude ?? ""}
                   onChange={(event) => updateManualCoordinate("lng", event.target.value)}
                   onBlur={applyManualCoordinates}
-                  className="w-full rounded-lg border border-charcoal-900/20 px-2 py-1.5 text-charcoal-900"
+                  className="w-full rounded-lg border border-charcoal-900/20 px-2 py-1.5 text-xs text-charcoal-900"
                 />
               </label>
             </div>
@@ -683,34 +683,34 @@ export function CheckoutForm({
         </div>
       ) : null}
 
-      <label className="text-sm text-charcoal-700">
-        <span className="mb-1 block font-semibold">{labels.notes}</span>
+      <label className="text-xs sm:text-sm text-charcoal-700">
+        <span className="mb-1 block font-semibold text-xs sm:text-sm">{labels.notes}</span>
         <textarea
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
           rows={3}
-          className="w-full rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-charcoal-900 outline-none ring-rose-gold-300/70 transition focus:ring"
+          className="w-full rounded-xl border border-charcoal-900/20 bg-white px-3 py-2 text-xs sm:text-sm text-charcoal-900 outline-none ring-rose-gold-300/70 transition focus:ring"
         />
       </label>
 
-      <div className="space-y-1 rounded-2xl border border-charcoal-900/10 bg-white p-4 text-sm text-charcoal-800">
+      <div className="space-y-1 rounded-2xl border border-charcoal-900/10 bg-white p-3 sm:p-4 text-xs sm:text-sm text-charcoal-800">
         <p>
           {labels.subtotal}: <strong>{formatter.format(subtotal)} {product.currency}</strong>
         </p>
         <p>
           {labels.deliveryFee}: <strong>{formatter.format(deliveryFee)} {product.currency}</strong>
         </p>
-        <p className="text-base">
+        <p className="text-sm sm:text-base">
           {labels.total}: <strong>{formatter.format(total)} {product.currency}</strong>
         </p>
       </div>
 
-      {error ? <p className="text-sm font-semibold text-red-700">{error}</p> : null}
+      {error ? <p className="text-xs sm:text-sm font-semibold text-red-700">{error}</p> : null}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700 disabled:cursor-not-allowed disabled:opacity-70"
+        className="w-full rounded-full bg-charcoal-900 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {isSubmitting ? labels.submitting : labels.submit}
       </button>

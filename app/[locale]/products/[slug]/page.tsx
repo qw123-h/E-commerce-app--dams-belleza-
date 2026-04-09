@@ -62,26 +62,26 @@ export default async function ProductDetailPage({
     const callbackUrl = `/${locale}/products/${product.slug}`;
 
     return (
-      <section className="mx-auto max-w-2xl space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 text-center shadow-xl shadow-charcoal-900/5">
-        <h1 className="font-display text-3xl text-charcoal-900">{t("labels.accountRequiredTitle")}</h1>
-        <p className="text-charcoal-700">{t("labels.accountRequiredMessage")}</p>
+      <section className="mx-auto w-full max-w-2xl space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 lg:p-8 text-center shadow-xl shadow-charcoal-900/5">
+        <h1 className="font-display text-xl sm:text-2xl lg:text-3xl text-charcoal-900">{t("labels.accountRequiredTitle")}</h1>
+        <p className="text-xs sm:text-sm text-charcoal-700">{t("labels.accountRequiredMessage")}</p>
 
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
           <Link
             href={`/${locale}/auth/sign-up?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-            className="rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
+            className="rounded-full bg-charcoal-900 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
           >
             {t("labels.createAccountToContinue")}
           </Link>
           <Link
             href={`/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-            className="rounded-full border border-charcoal-900/20 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
+            className="rounded-full border border-charcoal-900/20 bg-white px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
           >
             {t("labels.signInToContinue")}
           </Link>
         </div>
 
-        <Link href={`/${locale}/products`} className="inline-flex text-sm font-semibold text-charcoal-700 underline hover:text-charcoal-900">
+        <Link href={`/${locale}/products`} className="inline-flex text-xs sm:text-sm font-semibold text-charcoal-700 underline hover:text-charcoal-900">
           {t("labels.backToCatalog")}
         </Link>
       </section>
@@ -97,18 +97,18 @@ export default async function ProductDetailPage({
 
   return (
     <section className="space-y-6">
-      <a href={`/${locale}/products`} className="inline-flex text-sm font-semibold text-charcoal-700 transition hover:text-charcoal-900">
+      <a href={`/${locale}/products`} className="inline-flex text-xs sm:text-sm font-semibold text-charcoal-700 transition hover:text-charcoal-900">
         {t("labels.backToCatalog")}
       </a>
 
-      <article className="grid gap-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-xl shadow-charcoal-900/5 md:grid-cols-2">
+      <article className="grid grid-cols-1 gap-4 sm:gap-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-xl shadow-charcoal-900/5 md:grid-cols-2">
         <div className="space-y-3">
           <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-rose-gold-200/35 via-cream-200 to-charcoal-300/20">
             {product.images[0] ? (
               <img
                 src={product.images[0].url}
                 alt={product.images[0].altText ?? product.name}
-                className="h-80 w-full object-cover"
+                className="h-64 w-full sm:h-80 object-cover"
               />
             ) : (
               <div className="flex h-80 items-center justify-center">
@@ -120,7 +120,7 @@ export default async function ProductDetailPage({
           </div>
 
           {product.images.length > 1 ? (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {product.images.slice(1).map((image) => (
                 <img
                   key={image.id}
@@ -137,18 +137,18 @@ export default async function ProductDetailPage({
           <p className="text-xs uppercase tracking-[0.12em] text-charcoal-600">
             {t("labels.category")}: {product.category.name}
           </p>
-          <h1 className="font-display text-4xl text-charcoal-900">{product.name}</h1>
+          <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-charcoal-900">{product.name}</h1>
 
-          <p className="text-charcoal-700">{product.description ?? t("labels.noDescription")}</p>
+          <p className="text-xs sm:text-sm text-charcoal-700">{product.description ?? t("labels.noDescription")}</p>
 
           {sizePricing.length > 0 ? (
-            <div className="rounded-2xl border border-charcoal-900/10 bg-white p-4">
+            <div className="rounded-2xl border border-charcoal-900/10 bg-white p-3 sm:p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-600">{t("labels.sizesTitle")}</p>
-              <p className="mt-2 text-sm text-charcoal-700">{formatSizePricingSummary(sizePricing, sizePricing.length)}</p>
+              <p className="mt-2 text-xs sm:text-sm text-charcoal-700">{formatSizePricingSummary(sizePricing, sizePricing.length)}</p>
             </div>
           ) : null}
 
-          <p className="text-2xl font-semibold text-charcoal-900">
+          <p className="text-xl sm:text-2xl font-semibold text-charcoal-900">
             {hasPrice
               ? product.salePrice !== null
                 ? formatXaf(Number(product.salePrice), locale)
@@ -158,7 +158,7 @@ export default async function ProductDetailPage({
               : t("labels.negotiable")}
           </p>
 
-          <p className="text-sm text-charcoal-700">
+          <p className="text-xs sm:text-sm text-charcoal-700">
             {(product.stock?.quantityOnHand ?? 0) > 0
               ? `${t("labels.inStock")}: ${product.stock?.quantityOnHand ?? 0}`
               : t("labels.outOfStock")}
@@ -168,7 +168,7 @@ export default async function ProductDetailPage({
             <div className="space-y-2">
               <a
                 href={checkoutHref}
-                className="inline-flex rounded-full border border-charcoal-900/20 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
+                className="inline-flex rounded-full border border-charcoal-900/20 bg-white px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
               >
                 {t("labels.buyNow")}
               </a>

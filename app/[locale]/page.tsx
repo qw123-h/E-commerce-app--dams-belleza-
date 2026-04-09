@@ -68,29 +68,29 @@ export default async function HomePage({
 
   return (
     <section className="space-y-6 animate-fade-up">
-      <article className="relative overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-16 shadow-2xl shadow-charcoal-900/10 sm:px-10 animate-fade-up-delay-1">
+      <article className="relative overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 px-4 py-8 sm:px-6 sm:py-12 lg:px-10 lg:py-16 shadow-2xl shadow-charcoal-900/10 animate-fade-up-delay-1">
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-rose-gold-300/30 blur-3xl" />
         <div className="absolute -bottom-24 -left-12 h-72 w-72 rounded-full bg-charcoal-400/15 blur-3xl" />
-        <div className="relative max-w-4xl space-y-6">
-          <span className="inline-flex rounded-full border border-charcoal-900/15 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-charcoal-700">
+        <div className="relative max-w-4xl space-y-4 sm:space-y-6">
+          <span className="inline-flex rounded-full border border-charcoal-900/15 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-charcoal-700">
             {t("badge")}
           </span>
-          <h1 className="font-display text-4xl leading-tight text-charcoal-900 sm:text-6xl">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-6xl leading-tight text-charcoal-900">
             {t("headline")}
           </h1>
-          <p className="max-w-3xl text-base leading-8 text-charcoal-700 sm:text-lg">
+          <p className="max-w-3xl text-sm sm:text-base lg:text-lg leading-7 sm:leading-8 text-charcoal-700">
             {t("subheadline")}
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <Link
               href={`/${locale}/products`}
-              className="rounded-full bg-charcoal-900 px-6 py-3 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
+              className="rounded-full bg-charcoal-900 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
             >
               {t("ctaProducts")}
             </Link>
             <Link
               href={`/${locale}/auth/sign-in`}
-              className="rounded-full border border-charcoal-900/30 bg-white px-6 py-3 text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
+              className="rounded-full border border-charcoal-900/30 bg-white px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-charcoal-900 transition hover:bg-cream-100"
             >
               {t("ctaConnect")}
             </Link>
@@ -105,20 +105,20 @@ export default async function HomePage({
         </div>
       </article>
 
-      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5 animate-fade-up-delay-2">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-3xl text-charcoal-900">{t("featuredTitle")}</h2>
-          <Link href={`/${locale}/products`} className="text-sm font-semibold text-charcoal-800 underline">
+      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-lg shadow-charcoal-900/5 animate-fade-up-delay-2">
+        <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <h2 className="font-display text-xl sm:text-2xl lg:text-3xl text-charcoal-900">{t("featuredTitle")}</h2>
+          <Link href={`/${locale}/products`} className="text-xs sm:text-sm font-semibold text-charcoal-800 underline">
             {t("seeAll")}
           </Link>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {featuredProducts.map((product, index) => {
             const badge = promoBadges[index % promoBadges.length];
             const sizeSummary = formatSizePricingSummary(extractSizePricing(`${product.name}\n${product.description ?? ""}`), 2);
             return (
-              <Link key={product.id} href={`/${locale}/products/${product.slug}`} className="group rounded-2xl border border-charcoal-900/10 bg-white p-3 transition hover:border-charcoal-900/25 hover:shadow-lg">
+              <Link key={product.id} href={`/${locale}/products/${product.slug}`} className="group rounded-2xl border border-charcoal-900/10 bg-white p-2 sm:p-3 transition hover:border-charcoal-900/25 hover:shadow-lg">
                 <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-rose-gold-200/35 via-cream-100 to-charcoal-300/20">
                   {product.images[0]?.url ? (
                     <img
@@ -137,8 +137,8 @@ export default async function HomePage({
                 </div>
 
                 <div className="mt-3 space-y-1">
-                  <p className="line-clamp-1 font-semibold text-charcoal-900">{product.name}</p>
-                  <p className="text-sm text-charcoal-700">
+                  <p className="line-clamp-1 text-sm sm:text-base font-semibold text-charcoal-900">{product.name}</p>
+                  <p className="text-xs sm:text-sm text-charcoal-700">
                     {product.salePrice ? formatXaf(Number(product.salePrice), locale) : sizeSummary || t("priceOnRequest")}
                   </p>
                   {sizeSummary ? <p className="text-xs text-charcoal-600">{sizeSummary}</p> : null}

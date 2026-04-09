@@ -84,14 +84,14 @@ export default async function AccountPage({
 
   return (
     <section className="space-y-6">
-      <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-6 py-7 shadow-lg shadow-charcoal-900/5">
-        <h1 className="font-display text-4xl text-charcoal-900">{t("title")}</h1>
-        <p className="mt-2 text-charcoal-700">{t("subtitle")}</p>
+      <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-4 py-5 sm:px-6 sm:py-7 shadow-lg shadow-charcoal-900/5">
+        <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-charcoal-900">{t("title")}</h1>
+        <p className="mt-2 text-sm sm:text-base text-charcoal-700">{t("subtitle")}</p>
       </header>
 
-      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
-        <h2 className="font-display text-2xl text-charcoal-900">{t("profileTitle")}</h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-lg shadow-charcoal-900/5">
+        <h2 className="font-display text-lg sm:text-xl lg:text-2xl text-charcoal-900">{t("profileTitle")}</h2>
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <p className="text-sm text-charcoal-700"><span className="font-semibold text-charcoal-900">{t("fullName")}:</span> {`${user.firstName} ${user.lastName}`}</p>
           <p className="text-sm text-charcoal-700"><span className="font-semibold text-charcoal-900">{t("email")}:</span> {user.email}</p>
           <p className="text-sm text-charcoal-700"><span className="font-semibold text-charcoal-900">{t("phone")}:</span> {user.phone ?? t("notProvided")}</p>
@@ -99,25 +99,25 @@ export default async function AccountPage({
         </div>
       </article>
 
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <article className="rounded-2xl border border-charcoal-900/10 bg-cream-50 p-4 shadow">
           <p className="text-xs uppercase tracking-[0.08em] text-charcoal-600">{t("stats.totalOrders")}</p>
-          <p className="mt-1 text-3xl font-semibold text-charcoal-900">{totalOrders}</p>
+          <p className="mt-1 text-2xl sm:text-3xl font-semibold text-charcoal-900">{totalOrders}</p>
         </article>
         <article className="rounded-2xl border border-charcoal-900/10 bg-cream-50 p-4 shadow">
           <p className="text-xs uppercase tracking-[0.08em] text-charcoal-600">{t("stats.pending")}</p>
-          <p className="mt-1 text-3xl font-semibold text-charcoal-900">{pendingOrders}</p>
+          <p className="mt-1 text-2xl sm:text-3xl font-semibold text-charcoal-900">{pendingOrders}</p>
         </article>
         <article className="rounded-2xl border border-charcoal-900/10 bg-cream-50 p-4 shadow">
           <p className="text-xs uppercase tracking-[0.08em] text-charcoal-600">{t("stats.delivered")}</p>
-          <p className="mt-1 text-3xl font-semibold text-charcoal-900">{deliveredOrders}</p>
+          <p className="mt-1 text-2xl sm:text-3xl font-semibold text-charcoal-900">{deliveredOrders}</p>
         </article>
       </section>
 
-      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-6 shadow-lg shadow-charcoal-900/5">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-2xl text-charcoal-900">{t("ordersTitle")}</h2>
-          <Link href={`/${locale}/products`} className="text-sm font-semibold text-charcoal-800 underline">{t("continueShopping")}</Link>
+      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-lg shadow-charcoal-900/5">
+        <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <h2 className="font-display text-lg sm:text-xl lg:text-2xl text-charcoal-900">{t("ordersTitle")}</h2>
+          <Link href={`/${locale}/products`} className="text-xs sm:text-sm font-semibold text-charcoal-800 underline">{t("continueShopping")}</Link>
         </div>
 
         {user.orders.length ? (
@@ -126,8 +126,8 @@ export default async function AccountPage({
               const latestPayment = order.payments[0];
 
               return (
-                <article key={order.id} className="rounded-2xl border border-charcoal-900/10 bg-white p-4">
-                  <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                <article key={order.id} className="rounded-2xl border border-charcoal-900/10 bg-white p-3 sm:p-4">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
                     <p className="text-sm text-charcoal-700"><span className="font-semibold text-charcoal-900">{t("orderNumber")}:</span> {order.orderNumber}</p>
                     <p className="text-sm text-charcoal-700"><span className="font-semibold text-charcoal-900">{t("status")}:</span> {order.status}</p>
                     <p className="text-sm text-charcoal-700"><span className="font-semibold text-charcoal-900">{t("deliveryMethod")}:</span> {order.deliveryMethod}</p>
