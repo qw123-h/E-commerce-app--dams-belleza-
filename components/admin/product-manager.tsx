@@ -2,11 +2,13 @@
 
 import {useState, useTransition} from "react";
 import {ProductType, PriceMode} from "@prisma/client";
+import {extractSizePricing} from "@/lib/product-pricing";
 
 type Product = {
   id: string;
   sku: string;
   name: string;
+  description: string | null;
   productType: ProductType;
   priceMode: PriceMode;
   salePrice: number | null;
@@ -355,7 +357,21 @@ export function ProductManager({products: initialProducts, labels}: Props) {
                   <span className="inline-block rounded-full bg-charcoal-900/10 px-2 py-1 text-xs font-semibold">{product.productType}</span>
                 </td>
                 <td className="px-4 py-3 text-charcoal-900">
-                  {product.salePrice ? `${product.currency} ${product.salePrice.toLocaleString()}` : "-"}
+                  {(() => {
+                    const directPrice = product.salePrice;
+                    if (directPrice) {
+                      return `${product.currency} ${directPrice.toLocaleString()}`;
+                    }
+
+                    const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
+                    const minimumVariantPrice = sizePricing.length > 0 ? Math.min(...sizePricing.map((entry) => entry.price)) : null;
+
+                    if (minimumVariantPrice) {
+                      return `${product.currency} ${minimumVariantPrice.toLocaleString()}`;
+                    }
+
+                    return "-";
+                  })()}
                 </td>
                 <td className="px-4 py-3 text-charcoal-900">
                   {product.stock?.quantityOnHand ?? 0}

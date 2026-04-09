@@ -286,6 +286,7 @@ export async function listAdminProducts(query?: {
       id: true,
       sku: true,
       name: true,
+      description: true,
       productType: true,
       priceMode: true,
       salePrice: true,
