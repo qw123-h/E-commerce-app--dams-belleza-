@@ -48,11 +48,13 @@ export function MobileHeaderMenu({
     if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isOpen]);
 
@@ -74,7 +76,7 @@ export function MobileHeaderMenu({
       </button>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-[90] lg:hidden bg-[rgba(31,27,26,0.52)] backdrop-blur-sm">
+        <div className="fixed inset-0 z-[999] lg:hidden bg-[rgba(31,27,26,0.78)] backdrop-blur-md">
           <button
             type="button"
             aria-label="Close menu"
@@ -82,15 +84,15 @@ export function MobileHeaderMenu({
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="relative mx-auto flex h-full w-full max-w-3xl flex-col px-4 pt-4 pb-5 sm:px-6 sm:pt-6">
+          <div className="relative mx-auto flex h-full w-full max-w-3xl flex-col px-3 py-3 sm:px-6 sm:py-6">
             <div
               id="mobile-header-menu"
-              className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,251,247,0.99)_0%,rgba(247,240,231,0.98)_100%)] shadow-[0_28px_90px_rgba(31,27,26,0.35)] ring-1 ring-charcoal-900/5"
+              className="flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/70 bg-[linear-gradient(180deg,rgba(255,251,247,0.99)_0%,rgba(247,240,231,0.98)_100%)] shadow-[0_32px_100px_rgba(0,0,0,0.45)] ring-1 ring-charcoal-900/5"
             >
-              <div className="flex items-start justify-between gap-3 border-b border-charcoal-900/8 px-5 py-4 sm:px-6">
+              <div className="flex items-start justify-between gap-3 border-b border-charcoal-900/8 px-5 py-5 sm:px-6">
                 <div>
-                  <p className="font-display text-xl text-charcoal-900">Dam's belleza</p>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-charcoal-600">Yaounde • Mokolo</p>
+                  <p className="font-display text-2xl text-charcoal-900">Dam's belleza</p>
+                  <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-charcoal-600">Yaounde • Mokolo</p>
                 </div>
                 <button
                   type="button"
@@ -105,7 +107,12 @@ export function MobileHeaderMenu({
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+              <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+                <div className="mb-4 rounded-2xl border border-charcoal-900/8 bg-white/70 px-4 py-3 shadow-sm">
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-charcoal-600">Navigation</p>
+                  <p className="mt-1 text-sm text-charcoal-800">Choose a section</p>
+                </div>
+
                 <nav className="grid gap-2 text-sm font-semibold text-charcoal-800">
                 {links.map((link) => (
                   <Link
@@ -115,7 +122,7 @@ export function MobileHeaderMenu({
                     className={`rounded-2xl px-4 py-3.5 transition ${
                       activeLinkHref === link.href
                         ? "border border-charcoal-900/10 bg-white text-charcoal-900 shadow-sm"
-                        : "border border-transparent hover:border-charcoal-900/8 hover:bg-white/70"
+                        : "border border-transparent hover:border-charcoal-900/8 hover:bg-white"
                     }`}
                   >
                     {link.label}
@@ -124,9 +131,12 @@ export function MobileHeaderMenu({
                 </nav>
               </div>
 
-              <div className="border-t border-charcoal-900/8 bg-white/55 px-4 py-4 space-y-3 backdrop-blur-sm sm:px-6">
+              <div className="border-t border-charcoal-900/8 bg-white/75 px-4 py-4 space-y-3 backdrop-blur-sm sm:px-6">
+                <div className="rounded-2xl border border-charcoal-900/8 bg-white/90 px-4 py-3 shadow-sm">
+                  <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-charcoal-600">Language</p>
                 <div className="rounded-2xl border border-charcoal-900/8 bg-white/80 p-2 shadow-sm">
                   <LanguageSwitcher />
+                </div>
                 </div>
                 {signedIn ? (
                   <LogoutButton label={logoutLabel} locale={locale} />
