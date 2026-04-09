@@ -52,16 +52,16 @@ export default async function CheckoutPage({
     });
 
     return (
-      <section className="space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 shadow-xl shadow-charcoal-900/5">
+      <section className="w-full overflow-x-hidden space-y-6 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-8 shadow-xl shadow-charcoal-900/5">
         <div className="text-center">
-          <h1 className="font-display text-3xl text-charcoal-900">{t("missingProductTitle")}</h1>
-          <p className="mt-2 text-charcoal-700">{t("missingProductMessage")}</p>
+          <h1 className="font-display text-xl sm:text-2xl lg:text-3xl text-charcoal-900">{t("missingProductTitle")}</h1>
+          <p className="mt-2 text-xs sm:text-sm text-charcoal-700">{t("missingProductMessage")}</p>
         </div>
 
         {quickPickProducts.length ? (
           <div>
-            <p className="mb-3 text-center text-sm font-semibold text-charcoal-800">{t("quickPickTitle")}</p>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <p className="mb-3 text-center text-xs sm:text-sm font-semibold text-charcoal-800">{t("quickPickTitle")}</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {quickPickProducts.map((product) => (
                 <Link
                   key={product.slug}

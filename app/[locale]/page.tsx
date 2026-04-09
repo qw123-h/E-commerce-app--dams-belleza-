@@ -67,7 +67,7 @@ export default async function HomePage({
   const promoBadges = [t("promo.hot"), t("promo.fastShip"), t("promo.topSupplier")];
 
   return (
-    <section className="space-y-6 animate-fade-up">
+    <section className="w-full overflow-x-hidden space-y-6 animate-fade-up">
       <article className="relative overflow-hidden rounded-3xl border border-charcoal-900/10 bg-cream-50 px-4 py-8 sm:px-6 sm:py-12 lg:px-10 lg:py-16 shadow-2xl shadow-charcoal-900/10 animate-fade-up-delay-1">
         <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-rose-gold-300/30 blur-3xl" />
         <div className="absolute -bottom-24 -left-12 h-72 w-72 rounded-full bg-charcoal-400/15 blur-3xl" />

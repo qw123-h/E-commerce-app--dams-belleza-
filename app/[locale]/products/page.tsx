@@ -60,7 +60,7 @@ export default async function ProductsPage({
   const products = await getStorefrontProducts(query);
 
   return (
-    <section className="space-y-6 animate-fade-up">
+    <section className="w-full overflow-x-hidden space-y-6 animate-fade-up">
       <header className="rounded-3xl border border-charcoal-900/10 bg-cream-50 px-4 py-5 sm:px-6 sm:py-7 shadow-lg shadow-charcoal-900/5 animate-fade-up-delay-1">
         <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-charcoal-900">{t("title")}</h1>
         <p className="mt-2 text-sm sm:text-base text-charcoal-700">{t("subtitle")}</p>

@@ -31,9 +31,9 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
     <form
       action={`/${locale}/products`}
       method="GET"
-      className="grid gap-3 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-5 shadow-lg shadow-charcoal-900/5 md:grid-cols-12 animate-fade-up-delay-1"
+      className="w-full overflow-x-hidden grid gap-2 sm:gap-3 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-3 sm:p-5 shadow-lg shadow-charcoal-900/5 grid-cols-1 sm:grid-cols-2 md:grid-cols-12 animate-fade-up-delay-1"
     >
-      <div className="md:col-span-4">
+      <div className="sm:col-span-1 md:col-span-4">
         <label htmlFor="q" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-700">
           {labels.search}
         </label>
@@ -46,7 +46,7 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
         />
       </div>
 
-      <div className="md:col-span-2">
+      <div className="sm:col-span-1 md:col-span-2">
         <label htmlFor="type" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-700">
           {labels.productType}
         </label>
@@ -62,7 +62,7 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
         </select>
       </div>
 
-      <div className="md:col-span-2">
+      <div className="sm:col-span-1 md:col-span-2">
         <label htmlFor="priceMode" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-700">
           {labels.priceMode}
         </label>
@@ -77,7 +77,7 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
         </select>
       </div>
 
-      <div className="md:col-span-2">
+      <div className="sm:col-span-1 md:col-span-2">
         <label htmlFor="sort" className="mb-1 block text-xs font-semibold uppercase tracking-[0.12em] text-charcoal-700">
           {labels.sortBy}
         </label>
@@ -93,7 +93,7 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
         </select>
       </div>
 
-      <div className="flex gap-2 md:col-span-2 md:items-end">
+      <div className="sm:col-span-1 md:col-span-2 flex gap-2 md:items-end">
         <button
           type="submit"
           className="w-full rounded-xl bg-charcoal-900 px-3 py-2 text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"

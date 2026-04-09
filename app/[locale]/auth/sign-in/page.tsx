@@ -18,7 +18,7 @@ export default async function SignInPage({
     : `/${locale}`;
 
   return (
-    <section className="mx-auto max-w-md rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 shadow-xl shadow-charcoal-900/10">
+    <section className="mx-auto w-full max-w-md rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-8 shadow-xl shadow-charcoal-900/10">
       <h1 className="font-display text-3xl text-charcoal-900">{t("signInTitle")}</h1>
       <p className="mt-2 text-sm text-charcoal-700">{t("signInSubtitle")}</p>
 

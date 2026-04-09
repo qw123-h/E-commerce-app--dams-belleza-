@@ -8,7 +8,7 @@ export function WhatsAppFloat() {
       href={`https://wa.me/${WHATSAPP_NUMBER}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-5 right-5 z-50 rounded-full bg-charcoal-900 px-4 py-3 text-sm font-semibold text-cream-50 shadow-lg shadow-charcoal-900/30 transition hover:-translate-y-1 hover:bg-rose-gold-600"
+      className="fixed bottom-5 right-5 z-50 rounded-full bg-charcoal-900 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-cream-50 shadow-lg shadow-charcoal-900/30 transition hover:-translate-y-1 hover:bg-rose-gold-600 max-w-[calc(100vw-48px)]"
     >
       WhatsApp
     </Link>

@@ -96,7 +96,7 @@ export default async function ProductDetailPage({
     : `/${locale}/checkout?product=${product.slug}`;
 
   return (
-    <section className="space-y-6">
+    <section className="w-full overflow-x-hidden space-y-6">
       <a href={`/${locale}/products`} className="inline-flex text-xs sm:text-sm font-semibold text-charcoal-700 transition hover:text-charcoal-900">
         {t("labels.backToCatalog")}
       </a>

@@ -28,7 +28,7 @@ export default async function CheckoutSuccessPage({
   const t = await getTranslations({locale, namespace: "checkout"});
 
   return (
-    <section className="mx-auto max-w-2xl rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 text-center shadow-xl shadow-charcoal-900/5">
+    <section className="mx-auto w-full max-w-2xl rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-8 text-center shadow-xl shadow-charcoal-900/5">
       <h1 className="font-display text-4xl text-charcoal-900">{t("success.title")}</h1>
       <p className="mt-3 text-charcoal-700">{t("success.message")}</p>
       <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-charcoal-700">

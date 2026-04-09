@@ -11,7 +11,7 @@ export default async function LocaleNotFound({
   const t = await getTranslations({locale, namespace: "errors"});
 
   return (
-    <section className="mx-auto max-w-xl rounded-3xl border border-charcoal-900/10 bg-cream-50 p-8 text-center shadow-xl shadow-charcoal-900/10">
+    <section className="mx-auto w-full max-w-xl rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-8 text-center shadow-xl shadow-charcoal-900/10">
       <h1 className="font-display text-3xl text-charcoal-900">{t("notFoundTitle")}</h1>
       <p className="mt-3 text-charcoal-700">{t("notFoundMessage")}</p>
       <Link

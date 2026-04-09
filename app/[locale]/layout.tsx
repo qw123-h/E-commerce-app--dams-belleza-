@@ -63,11 +63,11 @@ export default async function LocaleLayout({
 
 
   return (
-    <html lang={locale} className={`${display.variable} ${body.variable}`}>
-      <body className="min-h-screen bg-luxury-gradient text-charcoal-900 antialiased">
+    <html lang={locale} className={`${display.variable} ${body.variable} overflow-x-hidden w-full`}>
+      <body className="min-h-screen w-full overflow-x-hidden bg-luxury-gradient text-charcoal-900 antialiased">
         <IntlProvider locale={locale} messages={messages} timeZone="Africa/Douala">
           <div className="flex min-h-screen w-full flex-col">
-            <header className="sticky top-0 z-40 flex items-center justify-between border-b border-charcoal-900/10 bg-cream-50/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 animate-fade-up">
+            <header className="sticky top-0 z-40 w-full flex items-center justify-between border-b border-charcoal-900/10 bg-cream-50/90 px-4 py-4 backdrop-blur sm:px-6 lg:px-8 animate-fade-up overflow-x-hidden">
               <div className="flex items-center gap-8">
                 <div>
                   <p className="font-display text-xl tracking-wide text-charcoal-900">Dam's belleza</p>
@@ -163,7 +163,7 @@ export default async function LocaleLayout({
                 <LanguageSwitcher />
               </div>
             </header>
-            <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8 animate-fade-up-delay-1">{children}</main>
+            <main className="flex-1 w-full overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8 animate-fade-up-delay-1">{children}</main>
           </div>
           <WhatsAppFloat />
         </IntlProvider>
