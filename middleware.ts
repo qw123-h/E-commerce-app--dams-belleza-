@@ -2,7 +2,15 @@ import {NextRequest, NextResponse} from "next/server";
 import {getToken} from "next-auth/jwt";
 import createMiddleware from "next-intl/middleware";
 import {routing} from "./i18n/routing";
-import {getApiRequiredPermission, getPageRequiredPermission, isPublicPagePath, stripLocalePath} from "@/lib/access-control";
+import {
+  getApiRequiredPermission,
+  getPageRequiredPermission,
+  isAuthOnlyApiPath,
+  isAuthPagePath,
+  isAuthenticatedPagePath,
+  isPublicPagePath,
+  stripLocalePath,
+} from "@/lib/access-control";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -30,17 +38,21 @@ export default async function middleware(request: NextRequest) {
   if (pathname.startsWith("/api")) {
     const requiredPermission = getApiRequiredPermission(pathname, request.method);
 
-    if (!requiredPermission) {
-      return NextResponse.next();
-    }
-
-    if (!token?.sub) {
+    if (requiredPermission && !token?.sub) {
       return NextResponse.json({message: "Unauthorized"}, {status: 401});
     }
 
-    const permissions = token.permissions ?? [];
-    if (!permissions.includes(requiredPermission)) {
-      return NextResponse.json({message: "Forbidden"}, {status: 403});
+    if (requiredPermission) {
+      const permissions = Array.isArray(token?.permissions) ? token.permissions : [];
+      if (!permissions.includes(requiredPermission)) {
+        return NextResponse.json({message: "Forbidden"}, {status: 403});
+      }
+
+      return NextResponse.next();
+    }
+
+    if (isAuthOnlyApiPath(pathname) && !token?.sub) {
+      return NextResponse.json({message: "Unauthorized"}, {status: 401});
     }
 
     return NextResponse.next();
@@ -58,21 +70,32 @@ export default async function middleware(request: NextRequest) {
     return intlResponse;
   }
 
+  const locale = inferLocale(pathname);
+  const callbackUrl = `${pathname}${request.nextUrl.search}`;
+
+  if (isAuthenticatedPagePath(normalizedPath) && !token?.sub) {
+    const signInUrl = new URL(`/${locale}/auth/sign-in`, request.url);
+    signInUrl.searchParams.set("callbackUrl", callbackUrl);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  if (isAuthPagePath(normalizedPath) && token?.sub) {
+    return NextResponse.redirect(new URL(`/${locale}/account`, request.url));
+  }
+
   const requiredPermission = getPageRequiredPermission(normalizedPath);
 
   if (!requiredPermission) {
     return intlResponse;
   }
 
-  const locale = inferLocale(pathname);
-
   if (!token?.sub) {
     const signInUrl = new URL(`/${locale}/auth/sign-in`, request.url);
-    signInUrl.searchParams.set("callbackUrl", pathname);
+    signInUrl.searchParams.set("callbackUrl", callbackUrl);
     return NextResponse.redirect(signInUrl);
   }
 
-  const permissions = token.permissions ?? [];
+  const permissions = Array.isArray(token.permissions) ? token.permissions : [];
 
   if (!permissions.includes(requiredPermission)) {
     return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));

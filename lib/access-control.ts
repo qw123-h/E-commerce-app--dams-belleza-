@@ -29,6 +29,7 @@ const PAGE_RULES: PageRule[] = [
   {prefix: "/admin/customers", permission: "orders.read"},
   {prefix: "/admin/delivery", permission: "orders.write"},
   {prefix: "/admin/reports", permission: "reports.read"},
+  {prefix: "/admin/notifications", permission: "reports.read"},
   {prefix: "/admin/roles", permission: "roles.manage"},
 ];
 
@@ -44,6 +45,16 @@ const PUBLIC_PATHS = new Set<string>([
   "/auth/forgot-password",
   "/auth/reset-password",
 ]);
+
+const AUTHENTICATED_PAGE_PREFIXES = [
+  "/account",
+];
+
+const AUTHENTICATED_API_PREFIXES = [
+  "/api/notifications",
+];
+
+const AUTH_PAGE_PREFIXES = ["/auth/sign-in", "/auth/sign-up", "/auth/forgot-password", "/auth/reset-password"];
 
 export function stripLocalePath(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean);
@@ -61,6 +72,16 @@ export function stripLocalePath(pathname: string): string {
 
 export function isPublicPagePath(pathname: string): boolean {
   return PUBLIC_PATHS.has(pathname);
+}
+
+export function isAuthenticatedPagePath(pathname: string): boolean {
+  return AUTHENTICATED_PAGE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
+export function isAuthPagePath(pathname: string): boolean {
+  return AUTH_PAGE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
 export function getPageRequiredPermission(pathname: string): string | null {
@@ -87,4 +108,8 @@ export function getApiRequiredPermission(pathname: string, method: string): stri
   }
 
   return matched.writePermission ?? matched.readPermission ?? null;
+}
+
+export function isAuthOnlyApiPath(pathname: string): boolean {
+  return AUTHENTICATED_API_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
