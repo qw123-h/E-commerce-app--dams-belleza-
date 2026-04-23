@@ -73,6 +73,34 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async signIn({user}) {
+      if (!user?.id) {
+        return false;
+      }
+
+      const activeUser = await prisma.user.findUnique({
+        where: {id: user.id},
+        select: {id: true, status: true, deletedAt: true},
+      });
+
+      return Boolean(activeUser && !activeUser.deletedAt && activeUser.status === "ACTIVE");
+    },
+    async redirect({url, baseUrl}) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      try {
+        const resolved = new URL(url);
+        if (resolved.origin === baseUrl) {
+          return url;
+        }
+      } catch {
+        // Fall back to base URL for invalid redirect targets.
+      }
+
+      return baseUrl;
+    },
     async jwt({token, user}) {
       if (user?.id) {
         token.sub = user.id;
@@ -128,10 +156,22 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.sub;
       session.user.name = token.name;
       session.user.email = token.email;
-      session.user.roles = token.roles;
-      session.user.permissions = token.permissions;
+      session.user.roles = Array.isArray(token.roles) ? token.roles : [];
+      session.user.permissions = Array.isArray(token.permissions) ? token.permissions : [];
 
       return session;
+    },
+  },
+  events: {
+    async signIn({user}) {
+      if (!user?.id) {
+        return;
+      }
+
+      await prisma.user.update({
+        where: {id: user.id},
+        data: {lastLoginAt: new Date()},
+      });
     },
   },
 };

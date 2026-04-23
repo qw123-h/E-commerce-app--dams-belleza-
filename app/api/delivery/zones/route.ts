@@ -1,14 +1,27 @@
 import {NextResponse} from "next/server";
 import {createDeliveryZone, listDeliveryZones} from "@/lib/admin-delivery";
+import {requirePermission} from "@/lib/guards";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const session = await requirePermission("orders.read");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const zones = await listDeliveryZones();
   return NextResponse.json({zones});
 }
 
 export async function POST(request: Request) {
+  const session = await requirePermission("orders.write");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const body = (await request.json().catch(() => null)) as
     | {zoneName?: string; city?: string; deliveryPrice?: number; isActive?: boolean}
     | null;

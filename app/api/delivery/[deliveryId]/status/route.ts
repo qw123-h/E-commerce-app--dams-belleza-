@@ -1,6 +1,7 @@
 import {DeliveryStatus} from "@prisma/client";
 import {NextResponse} from "next/server";
 import {updateDeliveryStatus} from "@/lib/admin-delivery";
+import {requirePermission} from "@/lib/guards";
 
 const ALLOWED = new Set<string>([
   DeliveryStatus.PENDING,
@@ -13,6 +14,12 @@ const ALLOWED = new Set<string>([
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, context: {params: {deliveryId: string}}) {
+  const session = await requirePermission("orders.write");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const body = (await request.json().catch(() => null)) as {status?: string; notes?: string} | null;
 
   if (!body?.status || !ALLOWED.has(body.status)) {

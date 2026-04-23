@@ -1,11 +1,15 @@
 import {NextResponse} from "next/server";
-import {requireActiveSession} from "@/lib/auth";
+import {requirePermission} from "@/lib/guards";
 import {assignRiderToOrder} from "@/lib/admin-delivery";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const session = await requireActiveSession();
+  const session = await requirePermission("orders.write");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
 
   const body = (await request.json().catch(() => null)) as {orderId?: string; riderId?: string} | null;
 

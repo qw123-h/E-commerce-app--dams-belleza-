@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
 import {getReportSummary, type ReportRange, saveReportSnapshot} from "@/lib/reports";
-import {auth} from "@/lib/auth";
+import {requirePermission} from "@/lib/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +13,12 @@ function getRange(value: string | null): ReportRange {
 }
 
 export async function GET(request: Request) {
+  const session = await requirePermission("reports.read");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const url = new URL(request.url);
   const range = getRange(url.searchParams.get("range"));
   const from = url.searchParams.get("from") ?? undefined;
@@ -33,13 +39,18 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const session = await requirePermission("reports.read");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const body = (await request.json().catch(() => null)) as
     | {range?: string; from?: string; to?: string}
     | null;
 
   const range = getRange(body?.range ?? null);
   const summary = await getReportSummary(range, body?.from, body?.to);
-  const session = await auth();
 
   const snapshot = await saveReportSnapshot(summary, session?.user?.id);
 

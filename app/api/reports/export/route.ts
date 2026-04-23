@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import * as XLSX from "xlsx";
 import {buildReportPdf, buildReportWorkbook} from "@/lib/report-export";
 import {getReportSummary, type ReportRange} from "@/lib/reports";
+import {requirePermission} from "@/lib/guards";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,6 +16,12 @@ function getRange(value: string | null): ReportRange {
 }
 
 export async function GET(request: Request) {
+  const session = await requirePermission("reports.read");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const url = new URL(request.url);
   const format = url.searchParams.get("format") === "pdf" ? "pdf" : "xlsx";
   const range = getRange(url.searchParams.get("range"));

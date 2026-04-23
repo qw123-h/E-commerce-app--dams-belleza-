@@ -1,6 +1,7 @@
 "use client";
 
 import {useMemo, useState, useTransition} from "react";
+import {useRouter} from "next/navigation";
 
 type Permission = {
   id: string;
@@ -57,6 +58,13 @@ type Props = {
     templateOwner: string;
     templateHelper: string;
     systemRoleLocked: string;
+    noAssignedRole: string;
+    createSuccess: string;
+    createError: string;
+    saveSuccess: string;
+    saveError: string;
+    assignSuccess: string;
+    assignError: string;
   };
 };
 
@@ -72,6 +80,7 @@ const OWNER_TEMPLATE = [
 const HELPER_TEMPLATE = ["orders.read", "orders.write", "payments.review"];
 
 export function RoleManager({roles, permissions, users, labels}: Props) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
@@ -82,9 +91,21 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
   );
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id ?? "");
   const [selectedAssignRoleId, setSelectedAssignRoleId] = useState(roles[0]?.id ?? "");
+  const [feedback, setFeedback] = useState<{type: "success" | "error"; message: string} | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const selectedRole = useMemo(() => roles.find((role) => role.id === selectedRoleId) ?? null, [roles, selectedRoleId]);
+  const permissionGroups = useMemo(() => {
+    const grouped = new Map<string, Permission[]>();
+
+    for (const permission of permissions) {
+      const current = grouped.get(permission.module) ?? [];
+      current.push(permission);
+      grouped.set(permission.module, current);
+    }
+
+    return [...grouped.entries()];
+  }, [permissions]);
 
   function toggleCreatePermission(key: string) {
     setRolePermissions((prev) => (prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key]));
@@ -100,10 +121,12 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
 
   function createRoleAction() {
     if (!name.trim() || !slug.trim()) {
+      setFeedback({type: "error", message: labels.createError});
       return;
     }
 
     startTransition(async () => {
+      setFeedback(null);
       const response = await fetch("/api/roles", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -111,8 +134,16 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
       });
 
       if (response.ok) {
-        window.location.reload();
+        setName("");
+        setSlug("");
+        setDescription("");
+        setRolePermissions([]);
+        setFeedback({type: "success", message: labels.createSuccess});
+        router.refresh();
+        return;
       }
+
+      setFeedback({type: "error", message: labels.createError});
     });
   }
 
@@ -122,6 +153,7 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
     }
 
     startTransition(async () => {
+      setFeedback(null);
       const response = await fetch(`/api/roles/${selectedRole.id}/permissions`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
@@ -129,17 +161,23 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
       });
 
       if (response.ok) {
-        window.location.reload();
+        setFeedback({type: "success", message: labels.saveSuccess});
+        router.refresh();
+        return;
       }
+
+      setFeedback({type: "error", message: labels.saveError});
     });
   }
 
   function assignRoleAction() {
     if (!selectedUserId || !selectedAssignRoleId) {
+      setFeedback({type: "error", message: labels.assignError});
       return;
     }
 
     startTransition(async () => {
+      setFeedback(null);
       const response = await fetch(`/api/users/${selectedUserId}/roles`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -147,13 +185,29 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
       });
 
       if (response.ok) {
-        window.location.reload();
+        setFeedback({type: "success", message: labels.assignSuccess});
+        router.refresh();
+        return;
       }
+
+      setFeedback({type: "error", message: labels.assignError});
     });
   }
 
   return (
     <section className="space-y-6">
+      {feedback ? (
+        <p
+          className={`rounded-2xl border px-4 py-3 text-sm ${
+            feedback.type === "success"
+              ? "border-green-600/30 bg-green-50 text-green-900"
+              : "border-red-600/30 bg-red-50 text-red-900"
+          }`}
+        >
+          {feedback.message}
+        </p>
+      ) : null}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <article className="space-y-4 rounded-3xl border border-charcoal-900/10 bg-cream-50 p-5">
           <h2 className="font-display text-2xl text-charcoal-900">{labels.createRole}</h2>
@@ -177,21 +231,33 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
 
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-charcoal-700">{labels.permissions}</p>
-            <div className="grid max-h-56 gap-2 overflow-auto rounded-xl border border-charcoal-900/10 bg-white p-3 sm:grid-cols-2">
-              {permissions.map((permission) => (
-                <label key={permission.id} className="inline-flex items-center gap-2 text-xs text-charcoal-800">
-                  <input
-                    type="checkbox"
-                    checked={rolePermissions.includes(permission.key)}
-                    onChange={() => toggleCreatePermission(permission.key)}
-                  />
-                  {permission.key}
-                </label>
+            <div className="max-h-56 space-y-3 overflow-auto rounded-xl border border-charcoal-900/10 bg-white p-3">
+              {permissionGroups.map(([module, modulePermissions]) => (
+                <div key={module} className="space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-charcoal-600">{module}</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {modulePermissions.map((permission) => (
+                      <label key={permission.id} className="inline-flex items-center gap-2 text-xs text-charcoal-800">
+                        <input
+                          type="checkbox"
+                          checked={rolePermissions.includes(permission.key)}
+                          onChange={() => toggleCreatePermission(permission.key)}
+                          disabled={isPending}
+                        />
+                        {permission.key}
+                      </label>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>
 
-          <button onClick={createRoleAction} className="rounded-xl bg-charcoal-900 px-4 py-2 text-sm font-semibold text-cream-50">
+          <button
+            onClick={createRoleAction}
+            disabled={isPending}
+            className="rounded-xl bg-charcoal-900 px-4 py-2 text-sm font-semibold text-cream-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
             {isPending ? labels.saving : labels.create}
           </button>
         </article>
@@ -220,19 +286,31 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
             </p>
           ) : (
             <>
-              <div className="grid max-h-56 gap-2 overflow-auto rounded-xl border border-charcoal-900/10 bg-white p-3 sm:grid-cols-2">
-                {permissions.map((permission) => (
-                  <label key={permission.id} className="inline-flex items-center gap-2 text-xs text-charcoal-800">
-                    <input
-                      type="checkbox"
-                      checked={editingPermissionKeys.includes(permission.key)}
-                      onChange={() => toggleEditPermission(permission.key)}
-                    />
-                    {permission.key}
-                  </label>
+              <div className="max-h-56 space-y-3 overflow-auto rounded-xl border border-charcoal-900/10 bg-white p-3">
+                {permissionGroups.map(([module, modulePermissions]) => (
+                  <div key={module} className="space-y-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-charcoal-600">{module}</p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {modulePermissions.map((permission) => (
+                        <label key={permission.id} className="inline-flex items-center gap-2 text-xs text-charcoal-800">
+                          <input
+                            type="checkbox"
+                            checked={editingPermissionKeys.includes(permission.key)}
+                            onChange={() => toggleEditPermission(permission.key)}
+                            disabled={isPending}
+                          />
+                          {permission.key}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
-              <button onClick={saveRolePermissions} className="rounded-xl border border-charcoal-900/20 bg-white px-4 py-2 text-sm font-semibold text-charcoal-900">
+              <button
+                onClick={saveRolePermissions}
+                disabled={isPending}
+                className="rounded-xl border border-charcoal-900/20 bg-white px-4 py-2 text-sm font-semibold text-charcoal-900 disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 {isPending ? labels.saving : labels.save}
               </button>
             </>
@@ -257,7 +335,11 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
               </option>
             ))}
           </select>
-          <button onClick={assignRoleAction} className="rounded-xl bg-charcoal-900 px-4 py-2 text-sm font-semibold text-cream-50">
+          <button
+            onClick={assignRoleAction}
+            disabled={isPending}
+            className="rounded-xl bg-charcoal-900 px-4 py-2 text-sm font-semibold text-cream-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
             {isPending ? labels.saving : labels.assign}
           </button>
         </div>
@@ -271,7 +353,7 @@ export function RoleManager({roles, permissions, users, labels}: Props) {
               <p className="mt-1 text-xs">
                 {user.userRoles.length
                   ? user.userRoles.map((entry) => entry.role.name).join(", ")
-                  : "No assigned role"}
+                  : labels.noAssignedRole}
               </p>
             </li>
           ))}

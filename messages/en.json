@@ -40,7 +40,14 @@
     "templates": "Role templates",
     "templateOwner": "Store owner template",
     "templateHelper": "Helper template",
-    "systemRoleLocked": "System role permissions are locked."
+    "systemRoleLocked": "System role permissions are locked.",
+    "noAssignedRole": "No assigned role",
+    "createSuccess": "Role created successfully.",
+    "createError": "Could not create role.",
+    "saveSuccess": "Role permissions updated.",
+    "saveError": "Could not update role permissions.",
+    "assignSuccess": "Role assigned successfully.",
+    "assignError": "Could not assign role to user."
   },
   "adminDelivery": {
     "title": "Delivery Operations",

@@ -34,6 +34,7 @@ export async function bootstrapSuperAdmin(input: BootstrapSuperAdminInput) {
         lastName: input.lastName,
         phone: input.phone,
         whatsappNumber: input.whatsappNumber,
+        passwordHash,
         status: UserStatus.ACTIVE,
         deletedAt: null,
       },

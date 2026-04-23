@@ -1,14 +1,27 @@
 import {NextResponse} from "next/server";
 import {createRider, listRiders} from "@/lib/admin-delivery";
+import {requirePermission} from "@/lib/guards";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const session = await requirePermission("orders.read");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const riders = await listRiders();
   return NextResponse.json({riders});
 }
 
 export async function POST(request: Request) {
+  const session = await requirePermission("orders.write");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const body = (await request.json().catch(() => null)) as {fullName?: string; phone?: string} | null;
 
   if (!body?.fullName?.trim() || !body.phone?.trim()) {

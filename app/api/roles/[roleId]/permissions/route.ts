@@ -1,9 +1,16 @@
 import {NextResponse} from "next/server";
+import {requirePermission} from "@/lib/guards";
 import {setRolePermissions} from "@/lib/admin-rbac";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request: Request, context: {params: {roleId: string}}) {
+  const session = await requirePermission("roles.manage");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const body = (await request.json().catch(() => null)) as {permissionKeys?: string[]} | null;
 
   if (!body || !Array.isArray(body.permissionKeys)) {

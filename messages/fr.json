@@ -40,7 +40,14 @@
     "templates": "Modeles roles",
     "templateOwner": "Modele proprietaire",
     "templateHelper": "Modele assistant",
-    "systemRoleLocked": "Les roles systeme sont verrouilles."
+    "systemRoleLocked": "Les roles systeme sont verrouilles.",
+    "noAssignedRole": "Aucun role affecte",
+    "createSuccess": "Role cree avec succes.",
+    "createError": "Impossible de creer le role.",
+    "saveSuccess": "Permissions du role mises a jour.",
+    "saveError": "Impossible de mettre a jour les permissions du role.",
+    "assignSuccess": "Role affecte avec succes.",
+    "assignError": "Impossible d'affecter ce role a l'utilisateur."
   },
   "adminDelivery": {
     "title": "Operations Livraison",

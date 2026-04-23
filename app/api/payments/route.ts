@@ -1,9 +1,16 @@
 import {NextResponse} from "next/server";
+import {requirePermission} from "@/lib/guards";
 import {listRecentPayments} from "@/lib/admin-payments";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const session = await requirePermission("payments.review");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const payments = await listRecentPayments(120);
 
   return NextResponse.json({

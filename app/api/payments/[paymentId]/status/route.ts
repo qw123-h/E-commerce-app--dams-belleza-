@@ -2,6 +2,7 @@ import {PaymentStatus} from "@prisma/client";
 import {NextResponse} from "next/server";
 import {updatePaymentStatus} from "@/lib/admin-payments";
 import {createDocumentToken} from "@/lib/document-token";
+import {requirePermission} from "@/lib/guards";
 
 type RequestBody = {
   status?: string;
@@ -16,6 +17,12 @@ const ALLOWED = new Set<string>([
 ]);
 
 export async function PATCH(request: Request, context: {params: {paymentId: string}}) {
+  const session = await requirePermission("payments.review");
+
+  if (!session) {
+    return NextResponse.json({message: "Forbidden"}, {status: 403});
+  }
+
   const body = (await request.json().catch(() => null)) as RequestBody | null;
 
   if (!body?.status || !ALLOWED.has(body.status)) {

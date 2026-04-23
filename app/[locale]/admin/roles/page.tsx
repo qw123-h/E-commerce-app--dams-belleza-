@@ -50,6 +50,13 @@ export default async function AdminRolesPage({
           templateOwner: t("templateOwner"),
           templateHelper: t("templateHelper"),
           systemRoleLocked: t("systemRoleLocked"),
+          noAssignedRole: t("noAssignedRole"),
+          createSuccess: t("createSuccess"),
+          createError: t("createError"),
+          saveSuccess: t("saveSuccess"),
+          saveError: t("saveError"),
+          assignSuccess: t("assignSuccess"),
+          assignError: t("assignError"),
         }}
       />
     </section>

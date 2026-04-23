@@ -14,6 +14,7 @@
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:bootstrap:super-admin": "tsx prisma/bootstrap-super-admin.ts",
     "prisma:verify:phase1": "tsx prisma/verify-phase1.ts",
     "prisma:prepare:images": "tsx prisma/prepare-import-from-images.ts",
     "prisma:import:real": "tsx prisma/import-real-products.ts"
