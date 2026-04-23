@@ -6,31 +6,42 @@ export type CatalogQuery = {
   type?: ProductType | "ALL";
   priceMode?: PriceMode | "ALL";
   sort?: "newest" | "price-asc" | "price-desc";
+  page?: number;
+  pageSize?: number;
 };
 
 export async function getStorefrontProducts(query: CatalogQuery) {
   const search = query.q?.trim();
+  const pageSize = Math.min(Math.max(query.pageSize ?? 12, 1), 48);
+  const requestedPage = Math.max(query.page ?? 1, 1);
 
-  return prisma.product.findMany({
-    where: {
-      deletedAt: null,
-      isPublished: true,
-      images: {
-        some: {},
-      },
-      ...(query.type && query.type !== "ALL" ? {productType: query.type} : {}),
-      ...(query.priceMode && query.priceMode !== "ALL" ? {priceMode: query.priceMode} : {}),
-      ...(search
-        ? {
-            OR: [
-              {name: {contains: search, mode: "insensitive"}},
-              {description: {contains: search, mode: "insensitive"}},
-              {sku: {contains: search, mode: "insensitive"}},
-              {category: {name: {contains: search, mode: "insensitive"}}},
-            ],
-          }
-        : {}),
+  const where = {
+    deletedAt: null,
+    isPublished: true,
+    images: {
+      some: {},
     },
+    ...(query.type && query.type !== "ALL" ? {productType: query.type} : {}),
+    ...(query.priceMode && query.priceMode !== "ALL" ? {priceMode: query.priceMode} : {}),
+    ...(search
+      ? {
+          OR: [
+            {name: {contains: search, mode: "insensitive" as const}},
+            {description: {contains: search, mode: "insensitive" as const}},
+            {sku: {contains: search, mode: "insensitive" as const}},
+            {category: {name: {contains: search, mode: "insensitive" as const}}},
+          ],
+        }
+      : {}),
+  };
+
+  const total = await prisma.product.count({where});
+  const totalPages = Math.max(Math.ceil(total / pageSize), 1);
+  const currentPage = Math.min(requestedPage, totalPages);
+  const skip = (currentPage - 1) * pageSize;
+
+  const items = await prisma.product.findMany({
+    where,
     select: {
       id: true,
       slug: true,
@@ -72,5 +83,15 @@ export async function getStorefrontProducts(query: CatalogQuery) {
         : query.sort === "price-desc"
           ? {salePrice: "desc"}
           : {createdAt: "desc"},
+    skip,
+    take: pageSize,
   });
+
+  return {
+    items,
+    total,
+    currentPage,
+    totalPages,
+    pageSize,
+  };
 }

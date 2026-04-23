@@ -12,6 +12,7 @@ type ProductFiltersProps = {
     wigs: string;
     perfumes: string;
     fixed: string;
+    negotiable: string;
     newest: string;
     priceLowToHigh: string;
     priceHighToLow: string;
@@ -74,6 +75,7 @@ export function ProductFilters({locale, labels, value}: ProductFiltersProps) {
         >
           <option value="ALL">{labels.all}</option>
           <option value="FIXED">{labels.fixed}</option>
+          <option value="NEGOTIABLE">{labels.negotiable}</option>
         </select>
       </div>
 

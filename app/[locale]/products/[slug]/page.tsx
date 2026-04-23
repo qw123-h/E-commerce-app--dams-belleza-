@@ -1,11 +1,13 @@
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import {getTranslations} from "next-intl/server";
+import {PriceMode, ProductType} from "@prisma/client";
 import {formatXaf} from "@/lib/format";
 import {auth} from "@/lib/auth";
 import {prisma} from "@/lib/prisma";
 import {routing} from "@/i18n/routing";
 import {extractSizePricing, formatSizePricingSummary} from "@/lib/product-pricing";
+import {ReviewSubmissionForm} from "@/components/storefront/review-submission-form";
 
 export default async function ProductDetailPage({
   params,
@@ -46,6 +48,28 @@ export default async function ProductDetailPage({
             id: true,
             url: true,
             altText: true,
+          },
+        },
+        reviews: {
+          where: {
+            isApproved: true,
+            deletedAt: null,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 8,
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            createdAt: true,
+            customer: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         },
       },
@@ -90,12 +114,16 @@ export default async function ProductDetailPage({
 
   const sizePricing = extractSizePricing(`${product.name}\n${product.description ?? ""}`);
   const hasPrice = product.salePrice !== null || sizePricing.length > 0;
+  const isWigNegotiable = product.productType === ProductType.WIG && product.priceMode === PriceMode.NEGOTIABLE;
   const defaultVariant = sizePricing[0] ?? (product.salePrice ? {size: "", price: Number(product.salePrice)} : null);
   const checkoutHref = sizePricing.length > 1
     ? `/${locale}/checkout?product=${product.slug}`
     : defaultVariant
       ? `/${locale}/checkout?product=${product.slug}${defaultVariant.size ? `&variant=${encodeURIComponent(`${defaultVariant.size}|${defaultVariant.price}`)}` : ""}`
       : `/${locale}/checkout?product=${product.slug}`;
+  const whatsappTarget = encodeURIComponent(process.env.WHATSAPP_NUMBER || "237691949858");
+  const wigQuoteMessage = encodeURIComponent(`Hello Dam's belleza, I want to negotiate for ${product.name}.`);
+  const wigWhatsappHref = `https://wa.me/${whatsappTarget}?text=${wigQuoteMessage}`;
 
   return (
     <section className="w-full overflow-x-hidden space-y-6">
@@ -166,7 +194,19 @@ export default async function ProductDetailPage({
               : t("labels.outOfStock")}
           </p>
 
-          {hasPrice ? (
+          {isWigNegotiable ? (
+            <div className="space-y-2">
+              <a
+                href={wigWhatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-full bg-charcoal-900 px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-semibold text-cream-50 transition hover:bg-charcoal-700"
+              >
+                {t("labels.requestOnWhatsApp")}
+              </a>
+              <p className="text-xs text-charcoal-700">{t("labels.buyNowHint")}</p>
+            </div>
+          ) : hasPrice ? (
             <div className="space-y-2">
               <a
                 href={checkoutHref}
@@ -181,6 +221,31 @@ export default async function ProductDetailPage({
           ) : null}
         </div>
       </article>
+
+      <article className="rounded-3xl border border-charcoal-900/10 bg-cream-50 p-4 sm:p-6 shadow-lg shadow-charcoal-900/5">
+        <h2 className="font-display text-xl sm:text-2xl text-charcoal-900">{t("labels.reviewsTitle")}</h2>
+        <p className="mt-2 text-sm text-charcoal-700">{t("labels.reviewsSubtitle")}</p>
+
+        {product.reviews.length ? (
+          <ul className="mt-4 space-y-3">
+            {product.reviews.map((review) => (
+              <li key={review.id} className="rounded-2xl border border-charcoal-900/10 bg-white p-3 sm:p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-charcoal-600">
+                  {"★".repeat(review.rating)}
+                </p>
+                <p className="mt-1 text-sm text-charcoal-800">{review.comment ?? t("labels.reviewNoComment")}</p>
+                <p className="mt-2 text-xs text-charcoal-600">
+                  {(review.customer?.firstName || t("labels.reviewAnonymous"))}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-4 text-sm text-charcoal-700">{t("labels.reviewsEmpty")}</p>
+        )}
+      </article>
+
+      <ReviewSubmissionForm productId={product.id} />
     </section>
   );
 }

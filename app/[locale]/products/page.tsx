@@ -10,6 +10,7 @@ type SearchParams = {
   type?: string;
   priceMode?: string;
   sort?: string;
+  page?: string;
 };
 
 function asSingle(value: string | string[] | undefined): string | undefined {
@@ -40,6 +41,42 @@ function normalizeSort(value: string | undefined): "newest" | "price-asc" | "pri
   return "newest";
 }
 
+function normalizePage(value: string | undefined): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+
+  return Math.floor(parsed);
+}
+
+function buildPageHref(locale: string, query: {q: string; type: ProductType | "ALL"; priceMode: PriceMode | "ALL"; sort: "newest" | "price-asc" | "price-desc"}, page: number) {
+  const params = new URLSearchParams();
+
+  if (query.q) {
+    params.set("q", query.q);
+  }
+
+  if (query.type !== "ALL") {
+    params.set("type", query.type);
+  }
+
+  if (query.priceMode !== "ALL") {
+    params.set("priceMode", query.priceMode);
+  }
+
+  if (query.sort !== "newest") {
+    params.set("sort", query.sort);
+  }
+
+  if (page > 1) {
+    params.set("page", String(page));
+  }
+
+  const qs = params.toString();
+  return qs ? `/${locale}/products?${qs}` : `/${locale}/products`;
+}
+
 export default async function ProductsPage({
   params,
   searchParams,
@@ -55,6 +92,7 @@ export default async function ProductsPage({
     type: normalizeType(asSingle(searchParams?.type)),
     priceMode: normalizePriceMode(asSingle(searchParams?.priceMode)),
     sort: normalizeSort(asSingle(searchParams?.sort)),
+    page: normalizePage(asSingle(searchParams?.page)),
   };
 
   const products = await getStorefrontProducts(query);
@@ -78,6 +116,7 @@ export default async function ProductsPage({
           wigs: t("filters.wigs"),
           perfumes: t("filters.perfumes"),
           fixed: t("filters.fixed"),
+          negotiable: t("filters.negotiable"),
           newest: t("filters.newest"),
           priceLowToHigh: t("filters.priceLowToHigh"),
           priceHighToLow: t("filters.priceHighToLow"),
@@ -89,13 +128,16 @@ export default async function ProductsPage({
 
       <div className="flex items-center justify-between animate-fade-up-delay-1">
         <p className="text-sm text-charcoal-700">
-          {products.length} {products.length === 1 ? t("result") : t("results")}
+          {products.total} {products.total === 1 ? t("result") : t("results")}
+        </p>
+        <p className="text-xs text-charcoal-600">
+          {t("filters.page")} {products.currentPage} / {products.totalPages}
         </p>
       </div>
 
-      {products.length ? (
+      {products.items.length ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 animate-fade-up-delay-2">
-          {products.map((product) => (
+          {products.items.map((product) => (
             <ProductCard
               key={product.id}
               locale={locale}
@@ -125,6 +167,23 @@ export default async function ProductsPage({
           {t("empty")}
         </div>
       )}
+
+      {products.totalPages > 1 ? (
+        <nav className="flex items-center justify-center gap-3">
+          <a
+            href={buildPageHref(locale, query, Math.max(1, products.currentPage - 1))}
+            className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] ${products.currentPage === 1 ? "pointer-events-none border-charcoal-900/10 bg-cream-100 text-charcoal-500" : "border-charcoal-900/20 bg-white text-charcoal-900 hover:bg-cream-100"}`}
+          >
+            {t("filters.previous")}
+          </a>
+          <a
+            href={buildPageHref(locale, query, Math.min(products.totalPages, products.currentPage + 1))}
+            className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] ${products.currentPage >= products.totalPages ? "pointer-events-none border-charcoal-900/10 bg-cream-100 text-charcoal-500" : "border-charcoal-900/20 bg-white text-charcoal-900 hover:bg-cream-100"}`}
+          >
+            {t("filters.next")}
+          </a>
+        </nav>
+      ) : null}
     </section>
   );
 }
