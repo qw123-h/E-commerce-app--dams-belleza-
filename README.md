@@ -35,13 +35,13 @@ Production-ready e-commerce platform for a single-vendor beauty store in Yaounde
 npm install
 ```
 
-2. Create environment file.
+2. Create local environment file.
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-3. Set a valid `DATABASE_URL` and `NEXTAUTH_SECRET` in `.env`.
+3. Set a valid `DATABASE_URL` and `NEXTAUTH_SECRET` in `.env.local`.
 
 4. Apply migrations.
 
@@ -60,6 +60,86 @@ npm run prisma:seed
 ```bash
 npm run dev
 ```
+
+## Vercel Deployment
+
+This project is already structured to run on Vercel as a Next.js app with API routes in the same deployment.
+
+### 1. Prepare the repository
+
+1. Commit and push your changes to GitHub.
+2. Make sure local secrets stay only in `.env.local`.
+3. Confirm the repository has `package.json`, `prisma/schema.prisma`, `next.config.mjs`, and `.nvmrc`.
+
+### 2. Create the Vercel project
+
+1. Open Vercel and import the GitHub repository.
+2. Keep the framework preset as Next.js.
+3. Leave the output directory empty.
+4. Set the build command to `npm run vercel-build`.
+
+### 3. Add production environment variables in Vercel
+
+Set these in Project Settings > Environment Variables.
+
+Required for production:
+
+- `DATABASE_URL` - your PostgreSQL connection string.
+- `NEXTAUTH_SECRET` - a strong random secret.
+- `NEXTAUTH_URL` - your canonical public production URL, for example `https://your-project.vercel.app` or a custom domain.
+
+Recommended or optional depending on features you use:
+
+- `STORE_NAME`
+- `WHATSAPP_NUMBER`
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+- `RESEND_API_KEY`
+- `RESEND_FROM`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASSWORD`
+- `SMTP_FROM`
+- `SUPER_ADMIN_PHONE`
+- `SUPER_ADMIN_WHATSAPP`
+- `SEED_PASSWORD`
+
+### 4. Keep local and Vercel envs separate
+
+- Put local development values in `.env.local`.
+- Do not commit `.env.local`.
+- Use the same variable names locally and in Vercel.
+- If a variable is only needed in production, set it in Vercel Production only.
+- If you test preview deploys, either set the same safe preview values or leave production-only integrations unset until you need them.
+
+### 5. Apply database migrations
+
+Use the GitHub Actions workflow in `.github/workflows/prisma-migrate.yml`.
+
+1. Add `DATABASE_URL` to GitHub repository secrets.
+2. Optionally add `SEED_PASSWORD` if you want to seed manually.
+3. Push to `main` to run migrations automatically.
+4. Or use the workflow manually with the `seed` input when you need seed data.
+
+### 6. Verify the deployment
+
+After the Vercel deploy finishes:
+
+- Open `/api/health/live` and confirm it returns `200`.
+- Open `/api/health/ready` and confirm it returns `200` in production.
+- Check `/api/health/business` for checkout-to-delivery readiness.
+- Confirm login, product browsing, and checkout work.
+- Confirm image uploads work if Cloudinary is configured.
+- Confirm password reset mail sends if email settings are configured.
+
+### 7. Preview deployment behavior
+
+- Preview deployments should still work even if `NEXTAUTH_URL` is not set there.
+- Production should always have `NEXTAUTH_URL` set to the real public domain.
+- If a preview deployment needs auth callbacks, verify them in the preview URL before promoting.
 
 ## Useful Commands
 

@@ -2,7 +2,11 @@
   "name": "dams-belleza",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
+    "vercel-build": "prisma generate && next build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

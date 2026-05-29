@@ -5,13 +5,19 @@ This checklist is the Phase 14 final polish and release runbook for Dam's bellez
 ## 1) Environment and Secrets
 
 - Set production `DATABASE_URL`.
-- Set `NEXTAUTH_URL` to the public HTTPS origin.
 - Set `NEXTAUTH_SECRET` to a strong random value.
+- Set `NEXTAUTH_URL` to the public HTTPS origin for production.
 - Set Cloudinary vars if image upload is used:
   - `CLOUDINARY_CLOUD_NAME`
   - `CLOUDINARY_API_KEY`
   - `CLOUDINARY_API_SECRET`
 - Confirm `WHATSAPP_NUMBER` and `STORE_NAME`.
+
+Local development note:
+
+- Keep local values in `.env.local`.
+- Do not reuse production secrets in local files.
+- Preview deployments can omit `NEXTAUTH_URL` if needed, but production should always define it.
 
 Render note:
 
@@ -35,6 +41,11 @@ npm run prisma:seed
 
 ## 3) Build Verification
   - For production image uploads these vars are required.
+
+For Vercel builds:
+
+- Use the `vercel-build` script so Prisma Client is generated before `next build`.
+- Pin the Node runtime to the repository's `.nvmrc` / `engines.node` value.
 
 Run locally or in CI before release:
 
